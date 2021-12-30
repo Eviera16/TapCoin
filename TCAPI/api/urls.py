@@ -2,7 +2,7 @@ from django.urls import path
 from .views import registration_view, get_user, logout_view, login_view, find_game, send_points, create_game, get_game_Id, forgot_name, username_code, newUsername_code, forgot_password, new_password, guest_login
 
 
-app_name = "backApp"
+app_name = "user_api"
 urlpatterns = [
     path('register', registration_view, name="register"),
     path('info', get_user, name="getUser"),
