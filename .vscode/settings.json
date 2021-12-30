@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/3f50ae26-a2cb-488f-8575-669611549667/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/tapcoin",
+    "appService.deploySubpath": "."
+}
