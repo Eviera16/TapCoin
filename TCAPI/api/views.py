@@ -52,8 +52,7 @@ def login_view(request):
         user = serializer.save()
         if type(user) == dict:
             return Response(user)
-        data['gotResponse'] = "|true"
-        data['response'] = "Login Successful!"
+        data['response'] = "Success"
         data['username'] = user.username
         user1 = User.objects.get(username=user.username)
         user1.in_game = False
@@ -64,7 +63,6 @@ def login_view(request):
         data['token'] = token
     else:
         data = serializer.errors
-        data['gotResponse'] = "|true"
     return Response(data)
 
 @api_view(['POST'])
