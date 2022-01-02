@@ -73,6 +73,9 @@ def get_user(request):
     
     serializer = GetUserSerializer(data=newData)
 
+    queue = Queue.objects.get(queueId=config('QUEUEID', cast=int))
+    queue.delete()
+
     data = {}
 
     if serializer.is_valid():
