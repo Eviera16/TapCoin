@@ -115,9 +115,8 @@ def logout_view(request):
 
 @api_view(['POST'])
 def find_game(request):
-    data = {
-        'response': "It's Working!!",
-    }
+    data = {}
+
     if len(Queue.objects.all()) == 0:
         newArr = [request.data['token']]
         Queue.objects.create(queue=newArr)
@@ -204,13 +203,13 @@ def send_points(request):
 def create_game(request):
 
     token = Token.objects.get(token=request.data['token'])
+    token1 = Token.objects.get(token=request.data['first'])
+    token2 = Token.objects.get(token=request.data['second'])
+    t1 = token1.token
+    t2 = token2.token
     user = User.objects.get(token=token)
     user1 = User.objects.get(username=request.data['first'])
     user2 = User.objects.get(username=request.data['second'])
-    t1 = user1.token
-    t2 = user2.token
-    token1 = t1.token
-    token2 = t2.token
     queue = Queue.objects.get(queueId=config('QUEUEID', cast=int))
     newQueue = []
 
@@ -218,7 +217,7 @@ def create_game(request):
 
     if user.in_game:
         for item in queue.queue:
-            if item != token1 and item != token2:
+            if item != t1 and item != t2:
                 newQueue.append(item)
         queue.queue = newQueue
         queue.save()
@@ -245,8 +244,13 @@ def get_game_Id(request):
     token = request.data['token']
     uToken = Token.objects.get(token=token)
     user = User.objects.get(token=uToken)
+    game = Game.objects.get(gameId=user.cg_Id)
+    first = game.first
+    second = game.second
     data = {
-        "gameId":user.cg_Id
+        "gameId":user.cg_Id,
+        "first":first,
+        "second":second
     }
 
     return Response(data)
