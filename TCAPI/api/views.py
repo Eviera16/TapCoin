@@ -208,7 +208,7 @@ def create_game(request):
             "response": "Success!!",
             "token":request.data['token'],
             "token1":request.data['first'],
-            # "token2":request.data['second'],
+            "token2":request.data['second'],
         }
 
         # token = Token.objects.get(token=request.data['token'])
