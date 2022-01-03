@@ -202,40 +202,44 @@ def send_points(request):
 @api_view(['POST'])
 def create_game(request):
 
-    token = Token.objects.get(token=request.data['token'])
-    token1 = Token.objects.get(token=request.data['first'])
-    token2 = Token.objects.get(token=request.data['second'])
-    t1 = token1.token
-    t2 = token2.token
-    user = User.objects.get(token=token)
-    user1 = User.objects.get(username=request.data['first'])
-    user2 = User.objects.get(username=request.data['second'])
-    queue = Queue.objects.get(queueId=config('QUEUEID', cast=int))
-    newQueue = []
+    data = {
+        "response": "Success!!"
+    }
 
-    data = {}
+    # token = Token.objects.get(token=request.data['token'])
+    # token1 = Token.objects.get(token=request.data['first'])
+    # token2 = Token.objects.get(token=request.data['second'])
+    # t1 = token1.token
+    # t2 = token2.token
+    # user = User.objects.get(token=token)
+    # user1 = User.objects.get(username=request.data['first'])
+    # user2 = User.objects.get(username=request.data['second'])
+    # queue = Queue.objects.get(queueId=config('QUEUEID', cast=int))
+    # newQueue = []
 
-    if user.in_game:
-        for item in queue.queue:
-            if item != t1 and item != t2:
-                newQueue.append(item)
-        queue.queue = newQueue
-        queue.save()
-        data['gameId'] = user.cg_Id
-        user1.in_game = False
-        user2.in_game = False
-        user1.save()
-        user2.save()
-    else:
-        gameId = binascii.hexlify(os.urandom(config('GAMEID', cast=int))).decode()
-        Game.objects.create(first=user1.username, second=user2.username, gameId=gameId)
-        user1.cg_Id = gameId
-        user2.cg_Id = gameId
-        user1.in_game = True
-        user2.in_game = True
-        user1.save()
-        user2.save()
-        data['gameId'] = gameId
+    # data = {}
+
+    # if user.in_game:
+    #     for item in queue.queue:
+    #         if item != t1 and item != t2:
+    #             newQueue.append(item)
+    #     queue.queue = newQueue
+    #     queue.save()
+    #     data['gameId'] = user.cg_Id
+    #     user1.in_game = False
+    #     user2.in_game = False
+    #     user1.save()
+    #     user2.save()
+    # else:
+    #     gameId = binascii.hexlify(os.urandom(config('GAMEID', cast=int))).decode()
+    #     Game.objects.create(first=user1.username, second=user2.username, gameId=gameId)
+    #     user1.cg_Id = gameId
+    #     user2.cg_Id = gameId
+    #     user1.in_game = True
+    #     user2.in_game = True
+    #     user1.save()
+    #     user2.save()
+    #     data['gameId'] = gameId
 
     return Response(data)
 
