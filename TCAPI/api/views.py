@@ -211,7 +211,7 @@ def create_game(request):
             "token2":request.data['second'],
         }
 
-        # token = Token.objects.get(token=request.data['token'])
+        token = Token.objects.get(token=request.data['token'])
         # token1 = Token.objects.get(token=request.data['first'])
         # token2 = Token.objects.get(token=request.data['second'])
         # t1 = token1.token
