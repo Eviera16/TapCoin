@@ -207,7 +207,7 @@ def create_game(request):
         data = {
             "response": "Success!!",
             "token":request.data['token'],
-            # "token1":request.data['first'],
+            "token1":request.data['first'],
             # "token2":request.data['second'],
         }
 
