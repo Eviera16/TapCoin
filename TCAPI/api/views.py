@@ -202,21 +202,27 @@ def send_points(request):
 @api_view(['POST'])
 def create_game(request):
 
-    data = {
-        "response": "Success!!",
-        "token":request.data['token'],
-        "token1":request.data['first'],
-        "token2":request.data['second'],
-    }
 
-    token = Token.objects.get(token=request.data['token'])
-    token1 = Token.objects.get(token=request.data['first'])
-    token2 = Token.objects.get(token=request.data['second'])
-    t1 = token1.token
-    t2 = token2.token
-    user = User.objects.get(token=token)
-    user1 = User.objects.get(username=request.data['first'])
-    user2 = User.objects.get(username=request.data['second'])
+    try:
+        data = {
+            "response": "Success!!",
+            "token":request.data['token'],
+            "token1":request.data['first'],
+            "token2":request.data['second'],
+        }
+
+        token = Token.objects.get(token=request.data['token'])
+        token1 = Token.objects.get(token=request.data['first'])
+        token2 = Token.objects.get(token=request.data['second'])
+        t1 = token1.token
+        t2 = token2.token
+        user = User.objects.get(token=token)
+        user1 = User.objects.get(username=request.data['first'])
+        user2 = User.objects.get(username=request.data['second'])
+    except:
+        data = {
+            "response": "In Except"
+        }
     # queue = Queue.objects.get(queueId=config('QUEUEID', cast=int))
     # newQueue = []
 
