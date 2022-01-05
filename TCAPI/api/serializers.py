@@ -1,7 +1,5 @@
 from rest_framework import serializers
 from ..models import User, Token
-import string
-import secrets
 import binascii
 import os
 import bcrypt
@@ -24,33 +22,6 @@ class RegistrationSerializer(serializers.Serializer):
         token1 = Token.objects.create(token=token)
         try:
             user = User.objects.create(**validated_data, token=token1, password=hashed)
-        except Exception as e:
-            newError = str(e)
-            newErr = newError.split("DETAIL:")[1]
-            error = newErr.split("=")[1]
-            return error
-
-        return user
-
-class GuestRegistrationSerializer(serializers.Serializer):
-    password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
-
-    def create(self, validated_data):
-        token = binascii.hexlify(os.urandom(config('TOKEN', cast=int))).decode()
-        pw = validated_data.pop("password")
-        salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
-        hashed = bcrypt.hashpw(pw.encode(config('ENCODE')), salt).decode()
-        token1 = Token.objects.create(token=token)
-        count = 0
-        for user in User.objects.all():
-            try:
-                if user.username.split("_")[0] == "CoinTapper":
-                    count += 1
-            except:
-                count = count
-        newCount = str(count)
-        try:
-            user = User.objects.create(first_name="Guest",last_name="Tapper",email="guestEmail" + newCount + "@gmail.com",username="CoinTapper_" + newCount, token=token1, password=hashed)
         except Exception as e:
             newError = str(e)
             newErr = newError.split("DETAIL:")[1]

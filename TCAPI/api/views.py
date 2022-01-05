@@ -1,25 +1,13 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import RegistrationSerializer, GetUserSerializer, LogoutSerializer, LoginSerializer, GuestRegistrationSerializer
+from .serializers import RegistrationSerializer, GetUserSerializer, LoginSerializer
 from ..models import *
-import string
-import secrets
 from decouple import config
-from django.shortcuts import redirect
 import binascii
 import os
-import base64
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.fernet import Fernet
 import bcrypt
-from django.core.mail import send_mail
-from datetime import datetime  
-import datetime
-from datetime import timedelta 
-import uuid
+
 
 
 @api_view(['POST'])
@@ -251,160 +239,6 @@ def get_game_Id(request):
         "gameId":user.cg_Id,
         "first":first,
         "second":second
-    }
-
-    return Response(data)
-
-@api_view(['POST'])
-def forgot_name(request):
-    alphabet = string.ascii_letters + string.digits
-    code = ''.join(secrets.choice(alphabet) for i in range(4))
-
-    try:
-        user = User.objects.get(email=request.data['email'])
-    except:
-        data = {
-            "result" : "Error",
-            "data" : "Invalid email."
-        }
-        return Response(data)
-    for ecode in EmailCode.objects.all():
-        if ecode.username == user.username:
-            ecode.delete()
-    EmailCode.objects.create(code=code, email=request.data['email'], username=user.username)
-    send_mail(
-        "Verification Code",
-        f"Your verification code is {code}. You have 5 minutes before this code expires.",
-        "thunderericviera@gmail.com",
-        [request.data['email'],],
-    )
-    data = {
-        "result": "Successfully sent email!"
-    }
-    return Response(data)
-
-
-@api_view(['POST'])
-def username_code(request):
-
-    try:
-        eCode = EmailCode.objects.get(code=request.data['code'])
-    except:
-        data = {
-            "result": "Invalid code. Code does not exits."
-        }
-        return Response(data)
-
-    plusFive = eCode.created_at + timedelta(minutes=5)
-    eCode.inputCode = request.data['code']
-    eCode.save()
-
-    if eCode.updated_at > plusFive:
-        eCode.delete()
-        data = {
-            "result" : "Success",
-            "expired": True,
-            "username": "Code has expired"
-        }
-        return Response(data)
-
-    data = {
-        "result": "Success",
-        "expired": False,
-        "username" : eCode.username
-    }
-
-
-    return Response(data)
-
-@api_view(['POST'])
-def newUsername_code(request):
-    alphabet = string.ascii_letters + string.digits
-    code = ''.join(secrets.choice(alphabet) for i in range(4))
-    user = User.objects.get(email=request.data['email'])
-    EmailCode.objects.create(code=code, email=request.data['email'], username=user.username)
-    send_mail(
-        "Verification Code",
-        f"Your verification code is {code}. You have 5 minutes before this code expires.",
-        "thunderericviera@gmail.com",
-        [request.data['email'],],
-    )
-    data = {
-        "result": "Successfully sent email!",
-        "expired": False
-    }
-
-    return Response(data)
-
-@api_view(['POST'])
-def forgot_password(request):
-
-    if request.data['email'] == True:
-        alphabet = string.ascii_letters + string.digits
-        code = ''.join(secrets.choice(alphabet) for i in range(4))
-        try:
-            user = User.objects.get(email=request.data['data'])
-        except:
-            data = {
-                "result" : "Error",
-                "data" : "Invalid email."
-            }
-            return Response(data)
-        for ecode in EmailCode.objects.all():
-            if ecode.username == user.username:
-                ecode.delete()
-
-        EmailCode.objects.create(code=code, email=request.data['data'], username=user.username)
-        send_mail(
-            "Verification Code",
-            f"Your verification code is {code}. You have 5 minutes before this code expires.",
-            "thunderericviera@gmail.com",
-            [request.data['data'],],
-        )
-    else:
-        alphabet = string.ascii_letters + string.digits
-        code = ''.join(secrets.choice(alphabet) for i in range(4))
-        try:
-            user = User.objects.get(username=request.data['data'])
-        except:
-            data = {
-                "result" : "Error",
-                "data" : "Invalid username."
-            }
-            return Response(data)
-
-        for ecode in EmailCode.objects.all():
-            if ecode.username == user.username:
-                ecode.delete()
-
-        EmailCode.objects.create(code=code, email=user.email, username=request.data['data'])
-        send_mail(
-            "Verification Code",
-            f"Your verification code is {code}. You have 5 minutes before this code expires.",
-            "thunderericviera@gmail.com",
-            [user.email,],
-        )
-
-    data = {
-        "result": "Success!",
-        "email": user.email,
-        "username": user.username
-    }
-        
-    return Response(data)
-
-@api_view(['POST'])
-def new_password(request):
-    user = User.objects.get(email=request.data['email'])
-
-    newPW = request.data['password']
-    salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
-    hashed = bcrypt.hashpw(newPW.encode(config('ENCODE')), salt).decode()
-    user.password = hashed
-    user.save()
-
-    data = {
-        "result": "SUCCESS!"
     }
 
     return Response(data)
