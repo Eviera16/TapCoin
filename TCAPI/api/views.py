@@ -246,34 +246,34 @@ def get_game_Id(request):
 @api_view(['POST'])
 def guest_login(request):
     data = {}
-    # token = binascii.hexlify(os.urandom(config('TOKEN', cast=int))).decode()
-    # pw = request.data['password']
-    # salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
-    # hashed = bcrypt.hashpw(pw.encode(config('ENCODE')), salt).decode()
-    # token1 = Token.objects.create(token=token)
-    # count = 0
-    # for user in User.objects.all():
-    #     try:
-    #         if user.username.split("_")[0] == "CoinTapper":
-    #             count += 1
-    #     except:
-    #         count = count
+    token = binascii.hexlify(os.urandom(config('TOKEN', cast=int))).decode()
+    pw = request.data['password']
+    salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
+    hashed = bcrypt.hashpw(pw.encode(config('ENCODE')), salt).decode()
+    token1 = Token.objects.create(token=token)
+    count = 0
+    for user in User.objects.all():
+        try:
+            if user.username.split("_")[0] == "CoinTapper":
+                count += 1
+        except:
+            count = count
 
-    # newCount = str(count)
-    # user = None
-    # try:
-    #     user = User.objects.create(first_name="Guest",last_name="Tapper",email="guestEmail" + newCount + "@gmail.com",username="CoinTapper_" + newCount, token=token1, password=hashed)
-    # except Exception as e:
-    #     newError = str(e)
-    #     newErr = newError.split("DETAIL:")[1]
-    #     error = newErr.split("=")[1]
-    #     data['error'] = True
-    #     data['password'] = error
-    #     return Response(data)
-    # data['response'] = "succesfully registered a new guest user."
-    # data['email'] = user.email
-    # data['username'] = user.username
-    # user1 = User.objects.get(username=data['username'])
-    # token = user1.token
-    # data['token'] = token.token
+    newCount = str(count)
+    user = None
+    try:
+        user = User.objects.create(first_name="Guest",last_name="Tapper",email="guestEmail" + newCount + "@gmail.com",username="CoinTapper_" + newCount, token=token1, password=hashed)
+    except Exception as e:
+        newError = str(e)
+        newErr = newError.split("DETAIL:")[1]
+        error = newErr.split("=")[1]
+        data['error'] = True
+        data['password'] = error
+        return Response(data)
+    data['response'] = "succesfully registered a new guest user."
+    data['email'] = user.email
+    data['username'] = user.username
+    user1 = User.objects.get(username=data['username'])
+    token = user1.token
+    data['token'] = token.token
     return Response(data)
