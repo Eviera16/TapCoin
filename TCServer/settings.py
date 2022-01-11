@@ -93,16 +93,16 @@ WSGI_APPLICATION = 'TCServer.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default' : {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'pocketcoins',
-#         'USER': config('DATABASE_USER'),
-#         'PASSWORD': config('DATABASE_PASSWORD'),
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
+DATABASES = {
+    'default' : {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': config('DATABASE_NAME'),
+        'USER': config('DATABASE_USER'),
+        'PASSWORD': config('DATABASE_PASSWORD'),
+        'HOST': config('DATABASE_HOST'),
+        'PORT': '5432',
+    }
+}
 
 # REST_FRAMEWORK = {
 #     'DEFAULT_AUTHENTICATION_CLASSES': [
