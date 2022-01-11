@@ -280,9 +280,6 @@ def guest_login(request):
 
 @api_view(['POST'])
 def send_cb(request):
-
-    print("***** IN SEND CB *****")
-    print(request.data['text'])
     tToken = request.data['token']
     token = Token.objects.get(token=tToken)
     user = User.objects.get(token=token)
