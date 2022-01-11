@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import registration_view, get_user, logout_view, login_view, find_game, send_points, create_game, get_game_Id, guest_login
+from .views import registration_view, get_user, logout_view, login_view, find_game, send_points, create_game, get_game_Id, guest_login, send_cb
 
 
 app_name = "user_api"
@@ -13,4 +13,5 @@ urlpatterns = [
     path('createGame', create_game, name="createGame"),
     path('getGID', get_game_Id, name="getGameId"),
     path('guestLogin', guest_login, name="guestLogin"),
+    path('sendCB', send_cb, name="sendCommentorBug")
 ]

@@ -277,3 +277,20 @@ def guest_login(request):
     token = user1.token
     data['token'] = token.token
     return Response(data)
+
+@api_view(['POST'])
+def send_cb(request):
+
+    print("***** IN SEND CB *****")
+    print(request.data['text'])
+    tToken = request.data['token']
+    token = Token.objects.get(token=tToken)
+    user = User.objects.get(token=token)
+
+    CommentOrBug.objects.create(message=request.data['text'], user=user.username)
+
+    data={
+        'response':'Successfully Sent'
+    }
+
+    return Response(data)

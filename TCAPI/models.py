@@ -49,8 +49,11 @@ class EmailCode(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
-
+class CommentOrBug(models.Model):
+    message = models.CharField(verbose_name="CommentOrBug", max_length=150)
+    user = models.CharField(verbose_name="username", max_length=80)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     
 
