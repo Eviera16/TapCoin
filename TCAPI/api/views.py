@@ -22,7 +22,6 @@ def registration_view(request):
                 data["isErr"] = True
                 return Response(data)
             data['response'] = "succesfully registered a new user."
-            data['email'] = user.email
             data['username'] = user.username
             user1 = User.objects.get(username=data['username'])
             token = user1.token
@@ -69,7 +68,6 @@ def get_user(request):
         data['username'] = user.username
         data['first_name'] = user.first_name
         data['last_name'] = user.last_name
-        data['email'] = user.email
         try:
             data['wins'] = user.wins
             data['losses'] = user.losses
@@ -262,7 +260,7 @@ def guest_login(request):
     newCount = str(count)
     user = None
     try:
-        user = User.objects.create(first_name="Guest",last_name="Tapper",email="guestEmail" + newCount + "@gmail.com",username="CoinTapper_" + newCount, token=token1, password=hashed)
+        user = User.objects.create(first_name="Guest",last_name="Tapper", username="CoinTapper_" + newCount, token=token1, password=hashed)
     except Exception as e:
         newError = str(e)
         newErr = newError.split("DETAIL:")[1]
@@ -271,7 +269,6 @@ def guest_login(request):
         data['password'] = error
         return Response(data)
     data['response'] = "succesfully registered a new guest user."
-    data['email'] = user.email
     data['username'] = user.username
     user1 = User.objects.get(username=data['username'])
     token = user1.token

@@ -7,7 +7,6 @@ class Token(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class User(models.Model):
-    email = models.EmailField(verbose_name="email", max_length=config('CHAR', cast=int), unique=True)
     first_name = models.CharField(verbose_name="first name", max_length=config('CHAR', cast=int))
     last_name = models.CharField(verbose_name="last name", max_length=config('CHAR', cast=int))
     username = models.CharField(max_length=config('CHAR', cast=int), unique=True, null=True)
@@ -38,14 +37,6 @@ class Game(models.Model):
     fPoints = models.IntegerField(verbose_name="first points", null=True)
     sPoints = models.IntegerField(verbose_name="second points", null=True)
     gameId = models.CharField(verbose_name="game id", max_length=config('GID', cast=int), unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-class EmailCode(models.Model):
-    code = models.CharField(verbose_name="email code", max_length=4)
-    inputCode = models.CharField(verbose_name="input email code", max_length=4)
-    email = models.CharField(verbose_name="email code email", max_length=config('CHAR', cast=int))
-    username = models.CharField(max_length=config('CHAR', cast=int), null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
