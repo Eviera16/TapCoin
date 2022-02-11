@@ -26,6 +26,10 @@ def registration_view(request):
             user1 = User.objects.get(username=data['username'])
             token = user1.token
             data['token'] = token.token
+            user1.in_game = False
+            user1.in_queue = False
+            user1.logged_in = True
+            user1.save()
         else:
             data = serializer.errors
         return Response(data)
@@ -42,7 +46,15 @@ def login_view(request):
         data['response'] = "Success"
         data['username'] = user.username
         user1 = User.objects.get(username=user.username)
+        if user1.logged_in:
+            newData = {
+                'log_in_error': "User already logged in."
+            }
+            return Response(newData)
         user1.in_game = False
+        user1.in_queue = False
+        user1.logged_in = True
+        user1.save()
         token = binascii.hexlify(os.urandom(config('TOKEN', cast=int))).decode()
         token1 = user1.token
         token1.token = token
@@ -95,6 +107,11 @@ def logout_view(request):
     except:
         data['response'] = "Failure"
         return Response(data)
+    user = User.objects.get(token=token1)
+    user.logged_in = False
+    user.in_queue = False
+    user.in_game = False
+    user.save()
     token1.token = "null"
     token1.save()
     return Response(data)
