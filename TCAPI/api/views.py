@@ -346,23 +346,6 @@ def put_in_queue(request):
     return Response(data)
 
 @api_view(['POST'])
-def take_out_queue(request):
-
-    tk = request.data['token']
-    token = Token.objects.get(token=tk)
-    user = User.objects.get(token=token)
-    user.in_queue = False
-    user.in_game = False
-    user.in_create_game = False
-    user.save()
-
-    data = {
-        "success":"success"
-    }
-
-    return Response(data)
-
-@api_view(['POST'])
 def game_disconnect(request):
 
     game_id = request.data['gameId']
@@ -377,7 +360,7 @@ def game_disconnect(request):
     token_1 = user_1.token
     token_2 = user_2.token
 
-    queue = Queue.objects.get(queueId=1616)
+    queue = Queue.objects.get(queueId=config('QUEUEID', cast=int))
 
     not_in_queue = (token_1.token, token_2.token)
 
@@ -404,7 +387,7 @@ def leave_queue(request):
     user.in_queue = False
     user.in_game = False
     user.save()
-    queue = Queue.objects.get(queueId=1616)
+    queue = Queue.objects.get(queueId=config('QUEUEID', cast=int))
     new_queue = []
     for toke in queue.queue:
         if toke != token.token:
