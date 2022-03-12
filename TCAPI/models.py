@@ -27,11 +27,6 @@ class User(models.Model):
     def __unicode__(self):
         return self.username
 
-class Queue(models.Model):
-    queueId = models.IntegerField(default=config('QUEUEID', cast=int))
-    queue = ArrayField(ArrayField(models.CharField(max_length=config('TK', cast=int), null=True)))
-    updated_at = models.DateTimeField(auto_now=True)
-
 class Game(models.Model):
     first = models.CharField(verbose_name="first player", max_length=config('CHAR', cast=int))
     second = models.CharField(verbose_name="second player", max_length=config('CHAR', cast=int))

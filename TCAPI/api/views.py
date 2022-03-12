@@ -91,7 +91,6 @@ def get_user(request):
         data = serializer.errors
     return Response(data)
 
-
 @api_view(['POST'])
 def logout_view(request):
     session = request.data['token']
@@ -115,54 +114,6 @@ def logout_view(request):
     token1.token = "null"
     token1.save()
     return Response(data)
-
-@api_view(['POST'])
-def find_game(request):
-    data = {}
-
-    if len(Queue.objects.all()) == 0:
-        newArr = [request.data['token']]
-        Queue.objects.create(queue=newArr)
-    queue = Queue.objects.get(queueId=config('QUEUEID', cast=int))
-    tempQueue = []
-    for item in queue.queue:
-        tk = Token.objects.get(token=item)
-        user = User.objects.get(token=tk)
-        if user.logged_in:
-            if user.in_queue:
-                if not user.in_create_game:
-                    if not user.in_game:
-                        tempQueue.append(item)
-    queue.queue = tempQueue
-    queue.save()
-    inQueue = False
-    for item in queue.queue:
-        if item == request.data['token']:
-            inQueue = True
-    if inQueue == False:
-        queue.queue.append(request.data['token'])
-        queue.save()
-
-    if len(queue.queue) > 1:
-        firstInQueue = queue.queue[0]
-        secondInQueue = queue.queue[1]
-
-        if request.data['token'] == firstInQueue:
-            data['first'] = request.data['token']
-            data['second'] = secondInQueue
-            data['response'] = "Found Queue"
-        elif request.data['token'] == secondInQueue:
-            data['second'] = request.data['token']
-            data['first'] = firstInQueue
-            data['response'] = "Found Queue"
-        else:
-            data['first'] = "None"
-            data['second'] = "None"
-            data['response'] = "Not yet"
-    else:
-        data['response'] = "Not yet"
-    return Response(data)
-
 
 @api_view(['POST'])
 def send_points(request):
@@ -215,44 +166,18 @@ def send_points(request):
 
 @api_view(['POST'])
 def create_game(request):
-
+    
     token = Token.objects.get(token=request.data['token'])
     token1 = Token.objects.get(token=request.data['first'])
     token2 = Token.objects.get(token=request.data['second'])
-    t1 = token1.token
-    t2 = token2.token
     user = User.objects.get(token=token)
     user1 = User.objects.get(token=token1)
     user2 = User.objects.get(token=token2)
-    queue = Queue.objects.get(queueId=config('QUEUEID', cast=int))
-    newQueue = []
-
-    if not user1.in_create_game:
-        user1.in_create_game = True
-        user2.in_create_game = True
-        user1.save()
-        user2.save()
-    elif not user2.in_create_game:
-        user1.in_create_game = True
-        user2.in_create_game = True
-        user1.save()
-        user2.save()
 
     data = {}
 
-    if user.in_game:
-        for item in queue.queue:
-            if item != t1 and item != t2:
-                newQueue.append(item)
-        queue.queue = newQueue
-        queue.save()
-        data['gameId'] = user.cg_Id
-        user1.in_game = False
-        user2.in_game = False
-        user1.save()
-        user2.save()
-    else:
-        gameId = binascii.hexlify(os.urandom(config('GAMEID', cast=int))).decode()
+    if user.in_game == False:
+        gameId = binascii.hexlify(os.urandom(8)).decode()
         Game.objects.create(first=user1.username, second=user2.username, gameId=gameId)
         user1.cg_Id = gameId
         user2.cg_Id = gameId
@@ -261,22 +186,14 @@ def create_game(request):
         user1.save()
         user2.save()
         data['gameId'] = gameId
-
-    return Response(data)
-
-@api_view(['POST'])
-def get_game_Id(request):
-    token = request.data['token']
-    uToken = Token.objects.get(token=token)
-    user = User.objects.get(token=uToken)
-    game = Game.objects.get(gameId=user.cg_Id)
-    first = game.first
-    second = game.second
-    data = {
-        "gameId":user.cg_Id,
-        "first":first,
-        "second":second
-    }
+        data['first'] = "True"
+    else:
+        data['gameId'] = user2.cg_Id
+        data['first'] = "False"
+        user1.in_game = False
+        user2.in_game = False
+        user1.save()
+        user2.save()
 
     return Response(data)
 
@@ -329,95 +246,15 @@ def send_cb(request):
     return Response(data)
 
 @api_view(['POST'])
-def put_in_queue(request):
+def check_in_game(request):
 
     tk = request.data['token']
     token = Token.objects.get(token=tk)
     user = User.objects.get(token=token)
-    user.in_queue = True
-    user.in_game = False
-    user.in_create_game = False
-    user.save()
-
-    data = {
-        "success" : "success"
-    }
-
-    return Response(data)
-
-@api_view(['POST'])
-def game_disconnect(request):
-
-    game_id = request.data['gameId']
-
-    dis_game = Game.objects.get(gameId=game_id)
-
-    username_1 = dis_game.first
-    username_2 = dis_game.second
-
-    user_1 = User.objects.get(username=username_1)
-    user_2 = User.objects.get(username=username_2)
-    token_1 = user_1.token
-    token_2 = user_2.token
-
-    queue = Queue.objects.get(queueId=config('QUEUEID', cast=int))
-
-    not_in_queue = (token_1.token, token_2.token)
-
-    new_queue = []
-
-    for token in queue.queue:
-        if token not in not_in_queue:
-            new_queue.append(token)
-
-    queue.queue = new_queue
-    queue.save()
-
-    data = {
-        "success":"success"
-    }
-    return Response(data)
-
-@api_view(['POST'])
-def leave_queue(request):
-
-    tk = request.data['token']
-    token = Token.objects.get(token=tk)
-    user = User.objects.get(token=token)
-    user.in_queue = False
-    user.in_game = False
-    user.save()
-    queue = Queue.objects.get(queueId=config('QUEUEID', cast=int))
-    new_queue = []
-    for toke in queue.queue:
-        if toke != token.token:
-            new_queue.append(toke)
-
-    queue.queue = new_queue
-    queue.save()
-
-    data = {
-        "success": "success"
-    }
-    return Response(data)
-
-@api_view(['POST'])
-def check_game_status(request):
-
-    check_game = Game.objects.get(gameId=request.data['gameId'])
-
-    f_name = check_game.first
-    s_name = check_game.second
-    user1 = User.objects.get(username=f_name)
-    user2 = User.objects.get(username=s_name)
-    
     data = {}
-    if user1.in_create_game:
-        if user2.in_create_game:
-            data['True'] = "True"
-        else:
-            data['False'] = "False"
+    if user.in_game:
+        data['response'] = "INGAME"
     else:
-        data['False'] = "False"
+        data['response'] = "OUTGAME"
 
     return Response(data)
