@@ -117,6 +117,7 @@ def logout_view(request):
 
 @api_view(['POST'])
 def send_points(request):
+    print("***** IN SEND POINTS *****")
 
     fPoints = request.data['fPoints']
     sPoints = request.data['sPoints']
@@ -126,6 +127,7 @@ def send_points(request):
     user2 = User.objects.get(username=game.second)
     
     if fPoints > sPoints:
+        print("***** FPOINTS IS GREATER *****")
         user1.wins += 1
         user1.win_streak += 1
         if user1.win_streak > user1.best_streak:
@@ -142,6 +144,7 @@ def send_points(request):
         game.winner_streak = user1.win_streak
         game.save()
     else:
+        print("***** SPOINTS IS GREATER *****")
         user1.losses += 1
         if user1.win_streak > user1.best_streak:
             user1.best_streak = user1.win_streak
