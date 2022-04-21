@@ -12,6 +12,7 @@ class User(models.Model):
     username = models.CharField(max_length=config('CHAR', cast=int), unique=True, null=True)
     password = models.CharField(max_length=config('CHAR', cast=int), unique=True, null=True)
     token = models.OneToOneField(Token, on_delete=models.CASCADE, primary_key=True)
+    friends = ArrayField(ArrayField(models.CharField(max_length=80, null=True), null=True, blank=True), null=True, blank=True, default=list)
     win_streak = models.IntegerField(verbose_name="win streak", null=True, default=0)
     best_streak = models.IntegerField(verbose_name="best streak", null=True, default=0)
     wins = models.IntegerField(verbose_name="wins", null=True, default=0)
@@ -35,6 +36,15 @@ class Game(models.Model):
     fPoints = models.IntegerField(verbose_name="first points", null=True)
     sPoints = models.IntegerField(verbose_name="second points", null=True)
     gameId = models.CharField(verbose_name="game id", max_length=config('GID', cast=int), unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class GameInvite(models.Model):
+    sender = models.CharField(verbose_name="sender", max_length=80)
+    reciever = models.CharField(verbose_name="reciever", max_length=80)
+    accepted = models.BooleanField(verbose_name="accepted invite", default=False)
+    cancel = models.BooleanField(verbose_name="cancel invite", default=False)
+    gameId = models.CharField(verbose_name="game id", max_length=16, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

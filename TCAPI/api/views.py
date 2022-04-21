@@ -87,6 +87,18 @@ def get_user(request):
             data['win_streak'] = user.win_streak
         except:
             pass
+        if type(user.friends) == list:
+            data['friends'] = user.friends
+        else:
+            data['friends'] = ["0"]
+        hasInvites = False
+        invites = []
+        for invite in GameInvite.objects.all():
+            if invite.reciever == user.username:
+                hasInvites = True
+                invites.append(invite.sender)
+        data['hasInvite'] = hasInvites
+        data['invites'] = invites
     else: 
         data = serializer.errors
     return Response(data)
@@ -261,3 +273,300 @@ def check_in_game(request):
         data['response'] = "OUTGAME"
 
     return Response(data)
+
+def send_friendRequest(request):
+    try:
+        token1 = Token.objects.get(token=request.data['token'])
+        user1 = User.objects.get(token=token1)
+        user2 = User.objects.get(username=request.data['username'])
+        rString = "requested|"
+        sString = "sentTo|"
+        fRequest = rString + user1.username
+        sRequest = sString + user2.username
+        for friend in user1.friends:
+            if sString in friend:
+                if friend.split(sString)[1] == user2.username:
+                    data = {
+                        "result": "ALREADY SENT TO",
+                        "friends": [user2.username]
+                    }
+                    return Response(data)
+            elif rString in friend:
+                if friend.split(rString)[1] == user2.username:
+                    data = {
+                        "result": "ALREADY RECIEVED",
+                        "friends": [user2.username]
+                    }
+                    return Response(data)
+        tempFriends1 = []
+        tempFriends2 = []
+        if type(user2.friends) == list:
+            for name in user2.friends:
+                if name != fRequest:
+                    if name != sRequest:
+                        tempFriends1.append(name)
+        tempFriends1.append(fRequest)
+        if type(user1.friends) == list:
+            for name in user1.friends:
+                if name != fRequest:
+                    if name != sRequest:
+                        tempFriends2.append(name)
+        tempFriends2.append(sRequest)
+        user1.friends = tempFriends2
+        user2.friends = tempFriends1
+        user1.save()
+        user2.save()
+        data = {
+            "result": "Success",
+            "friends": user1.friends
+        }
+        return Response(data)
+    except:
+        data = {
+            "result": "Could not find username.",
+            "friends": ["No friends"]
+        }
+        return Response(data)
+
+@api_view(['POST'])
+def accept_friendRequest(request):
+    try:
+        token1 = Token.objects.get(token=request.data['token'])
+        accepter = User.objects.get(token=token1)
+        sender = User.objects.get(username=request.data['username'])
+        rString = "requested|"
+        sString = "sentTo|"
+        newFriends = []
+        for name in accepter.friends:
+            if rString in name:
+                newName = name.split("|")[1]
+                if newName == sender.username:
+                    newFriends.append(newName)
+                else:
+                    newFriends.append(name)
+            else:
+                newFriends.append(name)
+        accepter.friends = newFriends
+        accepter.save()
+        newFriends2 = []
+        for name in sender.friends:
+            if sString in name:
+                newName = name.split("|")[1]
+                if newName == accepter.username:
+                    newFriends2.append(newName)
+                else:
+                    newFriends2.append(name)
+            else:
+                newFriends2.append(name)
+        sender.friends = newFriends2
+        sender.save()
+        data = {
+            "result": "Accepted"
+        }
+        return Response(data)
+    except:
+        data = {
+            "result": "Colud not accept request"
+        }
+        return Response(data)
+
+@api_view(['POST'])
+def decline_friendRequest(request):
+    try:
+        token1 = Token.objects.get(token=request.data['token'])
+        decliner = User.objects.get(token=token1)
+        sender = User.objects.get(username=request.data['username'])
+        rString = "requested|"
+        sString = "sentTo|"
+        newFriends = []
+        for name in decliner.friends:
+            if rString in name:
+                newName = name.split("|")[1]
+                if newName != sender.username:
+                    newFriends.append(name)
+            else:
+                newFriends.append(name)
+        decliner.friends = newFriends
+        decliner.save()
+        newFriends2 = []
+        for name in sender.friends:
+            if sString in name:
+                newName = name.split("|")[1]
+                if newName != decliner.username:
+                    newFriends2.append(name)
+            else:
+                newFriends2.append(name)
+        sender.friends = newFriends2
+        sender.save()
+        data = {
+            "result": "Declined"
+        }
+        return Response(data)
+    except:
+        data = {
+            "result": "Colud not decline request."
+        }
+        return Response(data)
+
+@api_view(['POST'])
+def remove_friend(request):
+    try:
+        token1 = Token.objects.get(token=request.data['token'])
+        remover = User.objects.get(token=token1)
+        removed = User.objects.get(username=request.data['username'])
+        newFriends = []
+        for name in remover.friends:
+            if name != removed.username:
+                newFriends.append(name)
+        remover.friends = newFriends
+        remover.save()
+        newFriends2 = []
+        for name in removed.friends:
+            if name != remover.username:
+                newFriends2.append(name)
+        removed.friends = newFriends2
+        removed.save()
+        data = {
+            "result": "Removed"
+        }
+        return Response(data)
+    except:
+        data = {
+            "result": "Could not remove friend."
+        }
+        return Response(data)
+
+@api_view(['POST'])
+def send_invite(request):
+    token = Token.objects.get(token=request.data['token'])
+    user1 = User.objects.get(token=token)
+    user2 = User.objects.get(username=request.data['username'])
+    gameId = binascii.hexlify(os.urandom(8)).decode()
+    uniqueId = False
+    while(not uniqueId):
+        foundId = False
+        for game in Game.objects.all():
+            if game.gameId == gameId:
+                foundId = True
+                break
+        if foundId:
+            gameId = binascii.hexlify(os.urandom(8)).decode()
+        else:
+            uniqueId = True
+    for gInvite in GameInvite.objects.all():
+        if gInvite.sender == user1.username:
+            if gInvite.reciever == user2.username:
+                data = {
+                    "first": "ALREADY EXISTS",
+                    "second": "ALREADY EXISTS",
+                    "gameId": "ALREADY EXISTS"
+                }
+                return Response(data)
+        elif gInvite.sender == user2.username:
+            if gInvite.reciever == user1.username:
+                data = {
+                    "first": "ALREADY EXISTS",
+                    "second": "ALREADY EXISTS",
+                    "gameId": "ALREADY EXISTS"
+                }
+                return Response(data)
+    GameInvite.objects.create(sender=user1.username, reciever=user2.username, gameId=gameId)
+    Game.objects.create(first=user1.username, second=user2.username, gameId=gameId)
+    data = {
+        "first":user1.username,
+        "second":user2.username,
+        "gameId":gameId
+    }
+    return Response(data)
+
+@api_view(['POST'])
+def ad_invite(request):
+    sender = User.objects.get(username=request.data['username'])
+    token = Token.objects.get(token=request.data['token'])
+    reciever = User.objects.get(token=token)
+    ad_request = request.data['adRequest']
+    try:
+        if ad_request == "delete":
+            deleted = False
+            try:
+                if request.data['cancelled'] == True:
+                    data = {
+                        "result": "Cancelled"
+                    }
+                    return Response(data)
+                else:
+                    for invite in GameInvite.objects.all():
+                        if invite.sender == sender.username:
+                            if invite.reciever == reciever.username:
+                                game = Game.objects.get(gameId=invite.gameId)
+                                game.delete()
+                                invite.delete()
+                                deleted = True
+                        elif invite.sender == reciever.username:
+                            if invite.reciever == sender.username:
+                                game = Game.objects.get(gameId=invite.gameId)
+                                game.delete()
+                                invite.delete()
+                                deleted = True
+                    if deleted:
+                        data = {
+                            "result": "Cancelled"
+                        }
+                    else:
+                        data = {
+                            "result": "Soemthing went wrong"
+                        }
+                    return Response(data)
+            except:
+                for invite in GameInvite.objects.all():
+                    if invite.sender == sender.username:
+                        if invite.reciever == reciever.username:
+                            game = Game.objects.get(gameId=invite.gameId)
+                            game.delete()
+                            invite.delete()
+                            deleted = True
+                    elif invite.sender == reciever.username:
+                        if invite.reciever == sender.username:
+                            game = Game.objects.get(gameId=invite.gameId)
+                            game.delete()
+                            invite.delete()
+                            deleted = True
+                if deleted:
+                    data = {
+                        "result": "Cancelled"
+                    }
+                else:
+                    data = {
+                        "result": "Soemthing went wrong"
+                    }
+                return Response(data)
+        else:
+            game = None
+            for invite in GameInvite.objects.all():
+                if invite.sender == sender.username:
+                    if invite.reciever == reciever.username:
+                        game = Game.objects.get(gameId=invite.gameId)
+                        invite.delete()
+                        deleted = True
+                elif invite.sender == reciever.username:
+                    if invite.reciever == sender.username:
+                        game = Game.objects.get(gameId=invite.gameId)
+                        invite.delete()
+                        deleted = True
+            if deleted:
+                data = {
+                    "result": "Accepted",
+                    "first":game.first,
+                    "second":game.second,
+                    "gameId":game.gameId
+                }
+            else:
+                data = {
+                    "result": "Soemthing went wrong"
+                }
+            return Response(data)
+    except:
+        data = {
+            "result": "Somethiong went wrong"
+        }
+        return Response(data)
