@@ -274,6 +274,7 @@ def check_in_game(request):
 
     return Response(data)
 
+@api_view(['POST'])
 def send_friendRequest(request):
     print("IN SEND FRIEND REQUEST")
     try:
