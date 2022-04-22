@@ -275,17 +275,24 @@ def check_in_game(request):
     return Response(data)
 
 def send_friendRequest(request):
+    print("IN SEND FRIEND REQUEST")
     try:
+        print("IN THE TRY")
         token1 = Token.objects.get(token=request.data['token'])
+        print("GOT TOKEN")
         user1 = User.objects.get(token=token1)
+        print("GOT USER1")
         user2 = User.objects.get(username=request.data['username'])
+        print("GOT USER2")
         rString = "requested|"
         sString = "sentTo|"
         fRequest = rString + user1.username
         sRequest = sString + user2.username
+        print("GOT F AND S REQUEST STRINGS")
         for friend in user1.friends:
             if sString in friend:
                 if friend.split(sString)[1] == user2.username:
+                    print("ALREADY SENT REQUEST")
                     data = {
                         "result": "ALREADY SENT TO",
                         "friends": [user2.username]
@@ -293,6 +300,7 @@ def send_friendRequest(request):
                     return Response(data)
             elif rString in friend:
                 if friend.split(rString)[1] == user2.username:
+                    print("ALREADY RECIEVED REQUEST")
                     data = {
                         "result": "ALREADY RECIEVED",
                         "friends": [user2.username]
@@ -322,10 +330,12 @@ def send_friendRequest(request):
         }
         return Response(data)
     except:
+        print("COULD NOT FIND USERNAME")
         data = {
             "result": "Could not find username.",
             "friends": ["No friends"]
         }
+        print(data)
         return Response(data)
 
 @api_view(['POST'])
