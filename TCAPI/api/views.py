@@ -280,6 +280,12 @@ def send_friendRequest(request):
         token1 = Token.objects.get(token=request.data['token'])
         user1 = User.objects.get(token=token1)
         user2 = User.objects.get(username=request.data['username'])
+        if user1 == user2:
+            data = {
+                "result": "Cannot send request to self.",
+                "friends": ["No friends"]
+            }
+            return Response(data)
         rString = "requested|"
         sString = "sentTo|"
         fRequest = rString + user1.username
