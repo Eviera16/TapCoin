@@ -174,6 +174,7 @@ def send_points(request):
         game.save()
     else:
         print("***** IT IS A TIE *****")
+        print("STOP")
         game.fPoints = fPoints
         game.sPoints = sPoints
         game.winner = "Tie"
