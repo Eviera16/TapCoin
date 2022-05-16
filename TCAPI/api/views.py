@@ -155,7 +155,7 @@ def send_points(request):
         game.winner = user1.username
         game.winner_streak = user1.win_streak
         game.save()
-    else:
+    elif sPoints > fPoints:
         print("***** SPOINTS IS GREATER *****")
         user1.losses += 1
         if user1.win_streak > user1.best_streak:
@@ -171,6 +171,13 @@ def send_points(request):
         game.sPoints = sPoints
         game.winner = user2.username
         game.winner_streak = user2.win_streak
+        game.save()
+    else:
+        print("***** IT IS A TIE *****")
+        game.fPoints = fPoints
+        game.sPoints = sPoints
+        game.winner = "Tie"
+        game.winner_streak = 0
         game.save()
 
     data = {
