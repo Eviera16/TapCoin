@@ -7,6 +7,7 @@ from decouple import config
 import binascii
 import os
 import bcrypt
+from django.core.mail import send_mail
 
 
 
@@ -585,3 +586,24 @@ def ad_invite(request):
             "result": "Somethiong went wrong"
         }
         return Response(data)
+
+@api_view(['POST'])
+def send_username(request):
+    email = request.data['email_address']
+    data = {
+        "response": True
+    }
+
+    try:
+        user = User.objects.get(email=email)
+        send_mail(
+            "TapTapCoin Username",
+            f"Your username associated with this email address is: {user.username}",
+            "thunderericviera@gmail.com",
+            [email,],
+        )
+    except:
+        data['response'] = False
+    
+    return Response(data)
+
