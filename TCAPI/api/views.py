@@ -598,23 +598,16 @@ def send_username(request):
     try:
         user = User.objects.get(email=email)
         data['message'] = "BEFORE SEND MAIL"
-        # send_mail(
-        #     "TapTapCoin Username",
-        #     f"Your username associated with this email address is: {user.username}",
-        #     "thunderericviera@gmail.com",
-        #     [email,],
-        # )
+        send_mail(
+            "TapTapCoin Username",
+            f"Your username associated with this email address is: {user.username}",
+            "thunderericviera@gmail.com",
+            [email,],
+        )
         data['message'] = f"AFTER SEND MAIL username:{user.username}"
-    except:
-        try:
-            user = None
-            for u in User.objects.all():
-                if u.email == email:
-                    user = u
-            data['message'] = f"SECOND TRY BLOCK username:{user.username}"
-        except:
-            data['response'] = False
-            data['message'] = "IN THE EXCEPT BLOCK"
+    except Exception as e:
+        data['response'] = False
+        data['message'] = f"IN THE EXCEPT BLOCK e: {e}"
     
     return Response(data)
 
