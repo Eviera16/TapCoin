@@ -601,7 +601,7 @@ def send_username(request):
         send_mail(
             "TapTapCoin Username",
             f"Your username associated with this email address is: {user.username}",
-            "thunderericviera@gmail.com",
+            "thundervieraeric@gmail.com",
             [email,],
         )
         data['message'] = f"AFTER SEND MAIL username:{user.username}"
