@@ -161,7 +161,7 @@ if os.getcwd() == '/app':
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = '587'
-EMAIL_HOST_USER = 'thunderericviera@gmail.com'
-EMAIL_HOST_PASSWORD = '#E16Vev!'
+EMAIL_HOST_USER = 'thundervieraeric@gmail.com'
+EMAIL_HOST_PASSWORD = '1999116eric'
 EMAIL_USE_TLS = True
 
