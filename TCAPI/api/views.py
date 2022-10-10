@@ -591,19 +591,23 @@ def ad_invite(request):
 def send_username(request):
     email = request.data['email_address']
     data = {
-        "response": True
+        "response": True,
+        "message" : ""
     }
 
     try:
         user = User.objects.get(email=email)
+        data['message'] = "BEFORE SEND MAIL"
         send_mail(
             "TapTapCoin Username",
             f"Your username associated with this email address is: {user.username}",
             "thunderericviera@gmail.com",
             [email,],
         )
+        data['message'] = "AFTER SEND MAIL"
     except:
         data['response'] = False
+        data['message'] = "IN THE EXCEPT BLOCK"
     
     return Response(data)
 
