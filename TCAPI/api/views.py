@@ -8,6 +8,7 @@ import binascii
 import os
 import bcrypt
 from django.core.mail import send_mail
+import requests
 
 
 
@@ -589,22 +590,24 @@ def ad_invite(request):
 
 @api_view(['POST'])
 def send_username(request):
-    email = request.data['email_address']
+    phone_number = request.data['phone_number']
     data = {
         "response": True,
         "message" : ""
     }
 
     try:
-        user = User.objects.get(email=email)
-        data['message'] = "BEFORE SEND MAIL"
-        # send_mail(
-        #     "TapTapCoin Username",
-        #     f"Your username associated with this email address is: {user.username}",
-        #     "thundervieraeric@gmail.com",
-        #     [email,],
-        # )
-        data['message'] = f"AFTER SEND MAIL username:{user.username}"
+        user = User.objects.get(phone_number=phone_number)
+        data['message'] = "BEFORE SEND TEXT"
+        resp = requests.post('https://textbelt.com/text', {
+            'phone': phone_number,
+            'message': f'Your username is: {user.username}',
+            'key': '0d40a9c1f04d558428eb525db9b4502e0a15cd31F5JAs5vP0Yc2JcS2TzrtsqFKd',
+        })
+        if resp.json['success']:
+            data['message'] = f"RESPONSE IS A SUCCESS username:{user.username}"
+        else:
+            data['message'] = f"RESPONSE IS NOT SUCCESSFULL username:{user.username}"
     except Exception as e:
         data['response'] = False
         data['message'] = f"IN THE EXCEPT BLOCK e: {e}"
