@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import registration_view, get_user, logout_view, login_view, send_points, create_game, guest_login, send_cb, check_in_game, send_friendRequest, accept_friendRequest, decline_friendRequest, remove_friend, send_invite, ad_invite, send_username
+from .views import registration_view, get_user, logout_view, login_view, send_points, create_game, guest_login, send_cb, check_in_game, send_friendRequest, accept_friendRequest, decline_friendRequest, remove_friend, send_invite, ad_invite, send_username, send_code, change_password
 
 
 app_name = "user_api"
@@ -19,5 +19,7 @@ urlpatterns = [
     path("remove_friend", remove_friend, name="removeFriend"),
     path("send_invite", send_invite, name="sendInvite"),
     path("ad_invite", ad_invite, name="accept/declineInvite"),
-    path("send_username", send_username, name="sendUsername")
+    path("send_username", send_username, name="sendUsername"),
+    path("send_code", send_code, name="sendCode"),
+    path("change_password", change_password, name="changePassword")
 ]
