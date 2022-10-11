@@ -598,12 +598,12 @@ def send_username(request):
     try:
         user = User.objects.get(email=email)
         data['message'] = "BEFORE SEND MAIL"
-        send_mail(
-            "TapTapCoin Username",
-            f"Your username associated with this email address is: {user.username}",
-            "thundervieraeric@gmail.com",
-            [email,],
-        )
+        # send_mail(
+        #     "TapTapCoin Username",
+        #     f"Your username associated with this email address is: {user.username}",
+        #     "thundervieraeric@gmail.com",
+        #     [email,],
+        # )
         data['message'] = f"AFTER SEND MAIL username:{user.username}"
     except Exception as e:
         data['response'] = False
