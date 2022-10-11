@@ -599,15 +599,12 @@ def send_username(request):
     try:
         user = User.objects.get(phone_number=phone_number)
         data['message'] = "BEFORE SEND TEXT"
-        resp = requests.post('https://textbelt.com/text', {
+        requests.post('https://textbelt.com/text', {
             'phone': phone_number,
             'message': f'Your username is: {user.username}',
             'key': '0d40a9c1f04d558428eb525db9b4502e0a15cd31F5JAs5vP0Yc2JcS2TzrtsqFKd',
         })
-        if resp.json['success']:
-            data['message'] = f"RESPONSE IS A SUCCESS username:{user.username}"
-        else:
-            data['message'] = f"RESPONSE IS NOT SUCCESSFULL username:{user.username}"
+        data['message'] = "RESPONSE IS A SUCCESS"
     except Exception as e:
         data['response'] = False
         data['message'] = f"IN THE EXCEPT BLOCK e: {e}"
