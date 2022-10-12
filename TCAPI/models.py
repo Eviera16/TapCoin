@@ -23,7 +23,7 @@ class User(models.Model):
     logged_in = models.BooleanField(verbose_name="logged in", default=False)
     in_create_game = models.BooleanField(verbose_name="in create game", default=False)
     cg_Id = models.CharField(verbose_name="current game id", max_length=config('GID', cast=int), null=True)
-    p_code = models.IntegerField(max_length=4, null=True)
+    p_code = models.IntegerField(null=True)
     date_joined = models.DateTimeField(verbose_name="date joined", auto_now_add=True)
     last_login = models.DateTimeField(verbose_name="last login", auto_now=True)
 

@@ -634,6 +634,7 @@ def send_code(request):
             'key': '0d40a9c1f04d558428eb525db9b4502e0a15cd31F5JAs5vP0Yc2JcS2TzrtsqFKd',
         })
         user.p_code = int(code)
+        user.save()
         data['message'] = "RESPONSE IS A SUCCESS"
     except Exception as e:
         data['response'] = False
