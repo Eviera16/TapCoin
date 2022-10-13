@@ -248,6 +248,10 @@ def guest_login(request):
     try:
         user = User.objects.create(first_name="Guest",last_name="Tapper", username="CoinTapper_" + newCount, token=token1, password=hashed)
         user.is_guest = True
+        user.in_game = False
+        user.in_queue = False
+        user.logged_in = True
+        user.save()
         data['response'] = "succesfully registered a new guest user."
         data['username'] = user.username
         data['error'] = False
