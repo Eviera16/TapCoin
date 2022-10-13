@@ -227,7 +227,7 @@ def create_game(request):
 def guest_login(request):
     data = {}
     token = binascii.hexlify(os.urandom(config('TOKEN', cast=int))).decode()
-    pw = request.data['password']
+    pw = "guestPassword"
     salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
     hashed = bcrypt.hashpw(pw.encode(config('ENCODE')), salt).decode()
     token1 = Token.objects.create(token=token)
@@ -243,18 +243,20 @@ def guest_login(request):
     user = None
     try:
         user = User.objects.create(first_name="Guest",last_name="Tapper", username="CoinTapper_" + newCount, token=token1, password=hashed)
+        data['response'] = "succesfully registered a new guest user."
+        data['username'] = user.username
+        data['error'] = False
+        data['token'] = token1.token
     except Exception as e:
         newError = str(e)
         newErr = newError.split("DETAIL:")[1]
         error = newErr.split("=")[1]
+        data['response'] = "Something went wrong."
+        data['username'] = error
         data['error'] = True
-        data['password'] = error
+        data['token'] = ""
         return Response(data)
-    data['response'] = "succesfully registered a new guest user."
-    data['username'] = user.username
-    user1 = User.objects.get(username=data['username'])
-    token = user1.token
-    data['token'] = token.token
+
     return Response(data)
 
 @api_view(['POST'])
