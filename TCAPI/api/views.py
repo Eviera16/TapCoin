@@ -122,12 +122,16 @@ def logout_view(request):
         data['response'] = "Failure"
         return Response(data)
     user = User.objects.get(token=token1)
-    user.logged_in = False
-    user.in_queue = False
-    user.in_game = False
-    user.save()
-    token1.token = "null"
-    token1.save()
+    if user.is_guest:
+        token1.delete()
+        user.delete()
+    else:
+        user.logged_in = False
+        user.in_queue = False
+        user.in_game = False
+        user.save()
+        token1.token = "null"
+        token1.save()
     return Response(data)
 
 @api_view(['POST'])
@@ -243,6 +247,7 @@ def guest_login(request):
     user = None
     try:
         user = User.objects.create(first_name="Guest",last_name="Tapper", username="CoinTapper_" + newCount, token=token1, password=hashed)
+        user.is_guest = True
         data['response'] = "succesfully registered a new guest user."
         data['username'] = user.username
         data['error'] = False
