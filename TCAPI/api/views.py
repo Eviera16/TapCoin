@@ -10,6 +10,7 @@ import bcrypt
 from django.core.mail import send_mail
 import requests
 from random import randrange
+from datetime import datetime
 
 
 
@@ -644,9 +645,11 @@ def send_code(request):
             'message': f'Your temporary code is: {code}',
             'key': '0d40a9c1f04d558428eb525db9b4502e0a15cd31F5JAs5vP0Yc2JcS2TzrtsqFKd',
         })
+        right_now = datetime.now()
         user.p_code = int(code)
+        user.p_code_time = right_now
         user.save()
-        data['message'] = "RESPONSE IS A SUCCESS"
+        data['message'] = f"RESPONSE IS A SUCCESS {right_now}."
     except Exception as e:
         data['response'] = False
         data['message'] = f"IN THE EXCEPT BLOCK e: {e}"
@@ -667,9 +670,14 @@ def change_password(request):
         user = User.objects.get(p_code=int(code))
         salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
         hashed = bcrypt.hashpw(password.encode(config('ENCODE')), salt).decode()
+        p_word_datetime = user.p_code_time
+        right_now = datetime.now()
         user.password = hashed
         user.save()
-        data['message'] = "Successfully saved."
+        if p_word_datetime < right_now:
+            data['message'] = f"Successfully saved. Right Now is Greater: {right_now}."
+        else:
+            data['message'] = f"Successfully saved. p_word_datetime is Greater: {p_word_datetime}."
     except:
         data['response'] = False
         data['message'] = "Something went wrong."
