@@ -674,7 +674,15 @@ def change_password(request):
         right_now = datetime.now()
         user.password = hashed
         user.save()
-        data['message'] = f"Successfully saved. p_word_datetime type: {type(p_word_datetime)} | right_now type: {type(right_now)}."
+        try:
+            if p_word_datetime > right_now:
+                data['message'] = f"Successfully saved. p_word_datetime is Greater: {p_word_datetime}."
+            elif right_now > p_word_datetime:
+                data['message'] = f"Successfully saved.right_now is Greater: {right_now}."
+            else:
+                data['message'] = "Successful but cant compare the dates for some reason."
+        except:
+            data['message'] = "Successful but caught in the except block."
     except:
         data['response'] = False
         data['message'] = "Something went wrong."
