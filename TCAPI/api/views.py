@@ -664,6 +664,7 @@ def change_password(request):
 
     data = {
         "response": True,
+        "invalid": False,
         "message": ""
     }
     user = User.objects.get(p_code=int(code))
@@ -679,6 +680,7 @@ def change_password(request):
             data['message'] = f"Successfully saved password."
         else:
             data['message'] = "Time limit reached. Invalid code."
+            data['invalid'] = True
     except:
         data['response'] = False
         data['message'] = "Something went wrong."
