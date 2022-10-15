@@ -10,9 +10,10 @@ import bcrypt
 from django.core.mail import send_mail
 import requests
 from random import randrange
-from datetime import datetime
 import time
-
+import datetime
+from django.conf import settings
+from django.utils.timezone import make_aware
 
 
 @api_view(['POST'])
@@ -646,7 +647,7 @@ def send_code(request):
             'message': f'Your temporary code is: {code}',
             'key': '0d40a9c1f04d558428eb525db9b4502e0a15cd31F5JAs5vP0Yc2JcS2TzrtsqFKd',
         })
-        right_now = datetime.now()
+        right_now = make_aware(datetime.datetime.now())
         user.p_code = int(code)
         user.p_code_time = right_now
         user.save()
@@ -672,35 +673,36 @@ def change_password(request):
         salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
         hashed = bcrypt.hashpw(password.encode(config('ENCODE')), salt).decode()
         p_word_datetime = user.p_code_time
-        right_now = datetime.now()
+        right_now = make_aware(datetime.datetime.now())
         user.password = hashed
         user.save()
         try:
-            date1 = datetime.now()
-            print(f"GOT DATE 1: {date1}")
-            print("WAITING NOW...")
-            time.sleep(1)
-            print("1")
-            time.sleep(1)
-            print("2")
-            time.sleep(1)
-            print("3")
-            date2 = datetime.now()
-            print(f"GOT DATE 2: {date2}")
-            if date1 > date2:
-                print("DATE 1 IS GREATER")
-                data['message'] = "Successfully saved. date1 is Greater"
-            elif date2 > date1:
-                print("DATE 2 IS GREATER")
-                data['message'] = "Successfully saved. date2 is Greater"
-            else:
-                print("INVALID COMPARISON")
-                data['message'] = "INVALID COMPARISON"
-            # if p_word_datetime > right_now:
-            # elif right_now > p_word_datetime:
-            #     data['message'] = f"Successfully saved.right_now is Greater: {right_now}."
+            # date1 = datetime.now()
+            # print(f"GOT DATE 1: {date1}")
+            # print("WAITING NOW...")
+            # time.sleep(1)
+            # print("1")
+            # time.sleep(1)
+            # print("2")
+            # time.sleep(1)
+            # print("3")
+            # date2 = datetime.now()
+            # print(f"GOT DATE 2: {date2}")
+            # if date1 > date2:
+            #     print("DATE 1 IS GREATER")
+            #     data['message'] = "Successfully saved. date1 is Greater"
+            # elif date2 > date1:
+            #     print("DATE 2 IS GREATER")
+            #     data['message'] = "Successfully saved. date2 is Greater"
             # else:
-            #     data['message'] = "Successful but cant compare the dates for some reason."
+            #     print("INVALID COMPARISON")
+            #     data['message'] = "INVALID COMPARISON"
+            if p_word_datetime > right_now:
+                data['message'] = f"Successfully saved.p_word_datetime is Greater: {right_now}."
+            elif right_now > p_word_datetime:
+                data['message'] = f"Successfully saved.right_now is Greater: {right_now}."
+            else:
+                data['message'] = "Successful but cant compare the dates for some reason."
         except:
             data['message'] = "Successful but caught in the except block."
     except:
