@@ -674,7 +674,7 @@ def change_password(request):
         right_now = datetime.now()
         user.password = hashed
         user.save()
-        data['message'] = f"Successfully saved. p_word_datetime: {p_word_datetime} | right_now: {right_now}."
+        data['message'] = f"Successfully saved. p_word_datetime type: {type(p_word_datetime)} | right_now type: {type(right_now)}."
     except:
         data['response'] = False
         data['message'] = "Something went wrong."
