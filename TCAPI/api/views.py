@@ -661,7 +661,6 @@ def send_code(request):
 def change_password(request):
     code = request.data['code']
     password = request.data['password']
-    print("IN CHANGE PASSWORD")
     data = {
         "response": True,
         "expired": False,
@@ -670,22 +669,17 @@ def change_password(request):
     user = User.objects.get(p_code=int(code))
     p_word_datetime_limit = user.p_code_time + timedelta(minutes=5)
     right_now = make_aware(datetime.datetime.now())
-
     try:
-        print("IN TRY")
         if p_word_datetime_limit > right_now:
-            print("PASSWORD TIME IS VALID")
             salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
             hashed = bcrypt.hashpw(password.encode(config('ENCODE')), salt).decode()
             user.password = hashed
             user.save()
             data['message'] = f"Successfully saved password."
         else:
-            print("PASSWORD TIME IS INVALID")
             data['message'] = "Time limit reached. Invalid code."
             data['expired'] = True
     except:
-        print("IN EXCEPT")
         data['response'] = False
         data['message'] = "Something went wrong."
 
