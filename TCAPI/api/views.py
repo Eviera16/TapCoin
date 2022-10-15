@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 import requests
 from random import randrange
 from datetime import datetime
+import time
 
 
 
@@ -675,12 +676,31 @@ def change_password(request):
         user.password = hashed
         user.save()
         try:
-            if p_word_datetime > right_now:
-                data['message'] = f"Successfully saved. p_word_datetime is Greater: {p_word_datetime}."
-            elif right_now > p_word_datetime:
-                data['message'] = f"Successfully saved.right_now is Greater: {right_now}."
+            date1 = datetime.now()
+            print(f"GOT DATE 1: {date1}")
+            print("WAITING NOW...")
+            time.sleep(1)
+            print("1")
+            time.sleep(1)
+            print("2")
+            time.sleep(1)
+            print("3")
+            date2 = datetime.now()
+            print(f"GOT DATE 2: {date2}")
+            if date1 > date2:
+                print("DATE 1 IS GREATER")
+                data['message'] = "Successfully saved. date1 is Greater"
+            elif date2 > date1:
+                print("DATE 2 IS GREATER")
+                data['message'] = "Successfully saved. date2 is Greater"
             else:
-                data['message'] = "Successful but cant compare the dates for some reason."
+                print("INVALID COMPARISON")
+                data['message'] = "INVALID COMPARISON"
+            # if p_word_datetime > right_now:
+            # elif right_now > p_word_datetime:
+            #     data['message'] = f"Successfully saved.right_now is Greater: {right_now}."
+            # else:
+            #     data['message'] = "Successful but cant compare the dates for some reason."
         except:
             data['message'] = "Successful but caught in the except block."
     except:
