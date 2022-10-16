@@ -34,7 +34,8 @@ def registration_view(request):
             user1.in_game = False
             user1.in_queue = False
             user1.logged_in = True
-            if user1.phone_number != "":
+            if request.data['phone_number'] != "":
+                user1.phone_number = request.data['phone_number']
                 user1.has_phone_number = True
             user1.save()
         else:

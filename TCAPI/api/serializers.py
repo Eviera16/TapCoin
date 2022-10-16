@@ -10,7 +10,6 @@ from decouple import config
 class RegistrationSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=config('CHAR', cast=int))
     last_name = serializers.CharField(max_length=config('CHAR', cast=int))
-    phone_number = serializers.CharField(max_length=16)
     username = serializers.CharField(max_length=config('CHAR', cast=int))
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
