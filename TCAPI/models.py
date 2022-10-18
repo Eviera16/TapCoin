@@ -27,6 +27,7 @@ class User(models.Model):
     is_guest = models.BooleanField(verbose_name="is guest", default=False)
     has_phone_number = models.BooleanField(verbose_name="has a phone number", default=False)
     p_code_time = models.DateTimeField(verbose_name="password code time added", null=True)
+    streak_time = models.DateTimeField(verbose_name="win streak time", null=True)
     date_joined = models.DateTimeField(verbose_name="date joined", auto_now_add=True)
     last_login = models.DateTimeField(verbose_name="last login", auto_now=True)
 
