@@ -162,14 +162,24 @@ def send_points(request):
     if fPoints > sPoints:
         print("***** FPOINTS IS GREATER *****")
         user1.wins += 1
+
         if user1.streak_time:
+            print("USER 1 HAS A STREAK TIME")
             time_limit = user1.streak_time + timedelta(minutes=2)
             if right_now < time_limit:
+                print("STILL WITHIN THE TIME LIMITS")
                 user1.win_streak += 1
             else:
+                print("NOT WITHIN THE TIME LIMITS")
                 user1.win_streak = 1
+        else:
+            print("NO STREAK TIME")
+            user1.win_streak = 1 
+
         if user1.win_streak > user1.best_streak:
+            print("NEW BEST STREAK")
             user1.best_streak = user1.win_streak
+
         user1.streak_time = right_now
         user1.save()
         user2.losses += 1
@@ -191,14 +201,19 @@ def send_points(request):
         user1.save()
         user2.wins += 1
         if user2.streak_time:
+            print("USER 2 HAS A STREAK TIME")
             time_limit = user2.streak_time + timedelta(minutes=2)
             if right_now < time_limit:
+                print("STILL WITHIN THE TIME LIMITS")
                 user2.win_streak += 1
             else:
+                print("NOT WITHIN TIME LIMITS")
                 user2.win_streak = 1
         else:
+            print("NO STREAK TIME")
             user2.win_streak = 1
         if user2.win_streak > user2.best_streak:
+            print("NEW BEST STREAK")
             user2.best_streak = user2.win_streak
         user2.streak_time = right_now
         user2.save()
