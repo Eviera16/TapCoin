@@ -151,6 +151,12 @@ def send_points(request):
         }
         return Response(data)
 
+    if request.data['winner'] == False:
+        data = {
+            "gameOver" : True
+        }
+        return Response(data)
+
     fPoints = request.data['fPoints']
     sPoints = request.data['sPoints']
     gameId = request.data['gameId']
