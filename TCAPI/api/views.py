@@ -714,6 +714,25 @@ def send_code(request):
 
 @api_view(['POST'])
 def change_password(request):
+    if request.data['code'] == "SAVE":
+        try:
+            password = request.data['password']
+            token = Token.objects.get(token=request.data['token'])
+            user = User.objects.get(token=token)
+            salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
+            hashed = bcrypt.hashpw(password.encode(config('ENCODE')), salt).decode()
+            user.password = hashed
+            user.is_guest = False
+            user.save()
+            data = {
+                "response": True
+            }
+        except:
+            data = {
+                "response": False
+            }
+        return Response(data)
+
     code = request.data['code']
     password = request.data['password']
     data = {
@@ -760,7 +779,10 @@ def save(request):
         user.username = request.data['username']
         user.phone_number = request.data['phone_number']
         user.save()
-        data['response'] = "Successfully saved data."
+        if request.data['guest']:
+            data['response'] = "Guest"
+        else:
+            data['response'] = "Successfully saved data."
     except:
         data['response'] = "Something went wrong"
 
