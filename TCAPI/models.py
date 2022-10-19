@@ -10,7 +10,7 @@ class User(models.Model):
     first_name = models.CharField(verbose_name="first name", max_length=config('CHAR', cast=int))
     last_name = models.CharField(verbose_name="last name", max_length=config('CHAR', cast=int))
     username = models.CharField(max_length=config('CHAR', cast=int), unique=True, null=True)
-    phone_number = models.CharField(max_length=16, unique=True, null=True)
+    phone_number = models.CharField(max_length=16, null=True)
     password = models.CharField(max_length=config('CHAR', cast=int), unique=True, null=True)
     cg_Id = models.CharField(verbose_name="current game id", max_length=config('GID', cast=int), null=True)
     token = models.OneToOneField(Token, on_delete=models.CASCADE, primary_key=True)
