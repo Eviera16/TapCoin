@@ -111,6 +111,12 @@ def get_user(request):
             data['HPN'] = user.has_phone_number
         elif request.data['from'] == "Profile":
             data['is_guest'] = user.is_guest
+        elif request.data['from'] == "Account":
+            data['is_guest'] = user.is_guest
+            if user.phone_number:
+                data['phone_number'] = user.phone_number
+            else:
+                data['phone_number'] = "Phone number"
     else: 
         data = serializer.errors
     return Response(data)
