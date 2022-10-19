@@ -740,3 +740,28 @@ def change_password(request):
 
     return Response(data)
         
+@api_view(['POST'])
+def save(request):
+
+    data = {
+        "response" : ""
+    }
+
+    try:
+        token = Token.objects.get(token=request.data['token'])
+        user = User.objects.get(token=token)
+        for u in User.objects.all():
+            if u.username == request.data['username']:
+                if u != user:
+                    data['response'] = "Invalid username."
+                    return Response(data)
+        user.first_name = request.data['first_name']
+        user.last_name = request.data['last_name']
+        user.username = request.data['username']
+        user.phone_number = request.data['phone_number']
+        user.save()
+        data['response'] = "Successfully saved data."
+    except:
+        data['response'] = "Something went wrong"
+
+    return Response(data)
