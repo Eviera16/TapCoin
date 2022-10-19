@@ -796,6 +796,8 @@ def save(request):
             print("IS NOT A GUEST")
             data['response'] = "Successfully saved data."
     except Exception as e:
+        print("E IS BELOW")
+        print(e)
         data['response'] = "Something went wrong: " + e
 
     return Response(data)
