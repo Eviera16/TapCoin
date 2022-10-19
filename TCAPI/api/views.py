@@ -109,6 +109,8 @@ def get_user(request):
         data['invites'] = invites
         if request.data['from'] == "Home":
             data['HPN'] = user.has_phone_number
+        elif request.data['from'] == "Profile":
+            data['is_guest'] = user.is_guest
     else: 
         data = serializer.errors
     return Response(data)
