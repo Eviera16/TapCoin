@@ -15,6 +15,12 @@ from datetime import timedelta
 from django.utils.timezone import make_aware
 
 
+QUEUE_NAME = "A"
+QUEUE_A_COUNT = 1
+QUEUE_B_COUNT = 1
+QUEUE_C_COUNT = 1
+QUEUE_D_COUNT = 1
+
 @api_view(['POST'])
 def registration_view(request):
     if request.method == 'POST':
@@ -799,5 +805,53 @@ def save(request):
         print("E IS BELOW")
         print(e)
         data['response'] = "Something went wrong: " + e
+
+    return Response(data)
+
+@api_view(['POST'])
+def queue():
+
+    data = {}
+
+    if QUEUE_NAME == "A":
+        if QUEUE_A_COUNT == 1:
+            QUEUE_A_COUNT = 2
+            data['q_name'] = "A"
+            data['q_count'] = 1
+        elif QUEUE_A_COUNT == 2:
+            QUEUE_NAME = "B"
+            QUEUE_A_COUNT = 1
+            data['q_name'] = "A"
+            data['q_count'] = 2
+    elif QUEUE_NAME == "B":
+        if QUEUE_B_COUNT == 1:
+            QUEUE_B_COUNT = 2
+            data['q_name'] = "B"
+            data['q_count'] = 1
+        elif QUEUE_B_COUNT == 2:
+            QUEUE_NAME = "C"
+            QUEUE_B_COUNT = 1
+            data['q_name'] = "B"
+            data['q_count'] = 2
+    if QUEUE_NAME == "C":
+        if QUEUE_C_COUNT == 1:
+            QUEUE_C_COUNT = 2
+            data['q_name'] = "C"
+            data['q_count'] = 1
+        elif QUEUE_C_COUNT == 2:
+            QUEUE_NAME = "D"
+            QUEUE_C_COUNT = 1
+            data['q_name'] = "C"
+            data['q_count'] = 2
+    if QUEUE_NAME == "D":
+        if QUEUE_D_COUNT == 1:
+            QUEUE_D_COUNT = 2
+            data['q_name'] = "D"
+            data['q_count'] = 1
+        elif QUEUE_D_COUNT == 2:
+            QUEUE_NAME = "A"
+            QUEUE_D_COUNT = 1
+            data['q_name'] = "D"
+            data['q_count'] = 2
 
     return Response(data)
