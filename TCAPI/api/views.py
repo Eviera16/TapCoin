@@ -15,11 +15,11 @@ from datetime import timedelta
 from django.utils.timezone import make_aware
 
 
-QUEUE_NAME = "A"
-QUEUE_A_COUNT = 1
-QUEUE_B_COUNT = 1
-QUEUE_C_COUNT = 1
-QUEUE_D_COUNT = 1
+queue_name = "A"
+queue_A_count = 1
+queue_B_count = 1
+queue_C_count = 1
+queue_D_count = 1
 
 @api_view(['POST'])
 def registration_view(request):
@@ -810,47 +810,59 @@ def save(request):
 
 @api_view(['POST'])
 def queue(request):
-
+    print("IN THE QUEUE FUNCTION")
     data = {}
 
-    if QUEUE_NAME == "A":
-        if QUEUE_A_COUNT == 1:
-            QUEUE_A_COUNT = 2
+    if queue_name == "A":
+        print("QUEUE NAME == A")
+        if queue_A_count == 1:
+            print("QUEUE COUNT == 1")
+            queue_A_count = 2
             data['q_name'] = "A"
             data['q_count'] = 1
-        elif QUEUE_A_COUNT == 2:
-            QUEUE_NAME = "B"
-            QUEUE_A_COUNT = 1
+        elif queue_A_count == 2:
+            print("QUEUE COUNT == 2")
+            queue_name = "B"
+            queue_A_count = 1
             data['q_name'] = "A"
             data['q_count'] = 2
-    elif QUEUE_NAME == "B":
-        if QUEUE_B_COUNT == 1:
-            QUEUE_B_COUNT = 2
+    elif queue_name == "B":
+        print("QUEUE NAME == B")
+        if queue_B_count == 1:
+            print("QUEUE COUNT == 1")
+            queue_B_count = 2
             data['q_name'] = "B"
             data['q_count'] = 1
-        elif QUEUE_B_COUNT == 2:
-            QUEUE_NAME = "C"
-            QUEUE_B_COUNT = 1
+        elif queue_B_count == 2:
+            print("QUEUE COUNT == 2")
+            queue_name = "C"
+            queue_B_count = 1
             data['q_name'] = "B"
             data['q_count'] = 2
-    if QUEUE_NAME == "C":
-        if QUEUE_C_COUNT == 1:
-            QUEUE_C_COUNT = 2
+    if queue_name == "C":
+        print("QUEUE NAME == C")
+        if queue_C_count == 1:
+            print("QUEUE COUNT = 1")
+            queue_C_count = 2
             data['q_name'] = "C"
             data['q_count'] = 1
-        elif QUEUE_C_COUNT == 2:
-            QUEUE_NAME = "D"
-            QUEUE_C_COUNT = 1
+        elif queue_C_count == 2:
+            print("QUEUE COUNT == 2")
+            queue_name = "D"
+            queue_C_count = 1
             data['q_name'] = "C"
             data['q_count'] = 2
-    if QUEUE_NAME == "D":
-        if QUEUE_D_COUNT == 1:
-            QUEUE_D_COUNT = 2
+    if queue_name == "D":
+        print("QUEUE NAME == D")
+        if queue_D_count == 1:
+            print("QUEUE COUNT == 1")
+            queue_D_count = 2
             data['q_name'] = "D"
             data['q_count'] = 1
-        elif QUEUE_D_COUNT == 2:
-            QUEUE_NAME = "A"
-            QUEUE_D_COUNT = 1
+        elif queue_D_count == 2:
+            print("QUEUE COUNT = 2")
+            queue_name = "A"
+            queue_D_count = 1
             data['q_name'] = "D"
             data['q_count'] = 2
 
