@@ -809,7 +809,7 @@ def save(request):
     return Response(data)
 
 @api_view(['POST'])
-def queue():
+def queue(request):
 
     data = {}
 
