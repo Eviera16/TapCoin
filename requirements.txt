@@ -29,7 +29,7 @@ python-decouple==3.4
 
 
 
-sqlparse==0.4.1
+
 squareup==9.1.0.20210317
 urllib3==1.26.4
 uWSGI==2.0.20
