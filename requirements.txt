@@ -7,4 +7,5 @@ gunicorn==20.1.0
 jsonpickle==0.9.6
 psycopg2-binary==2.8.6
 python-decouple==3.4
+requests==2.25.1
 uWSGI==2.0.20

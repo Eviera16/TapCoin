@@ -7,7 +7,7 @@ from decouple import config
 import binascii
 import os
 import bcrypt
-
+import requests
 from random import randrange
 import datetime
 from datetime import timedelta
