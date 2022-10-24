@@ -6,7 +6,7 @@ bcrypt==3.2.0
 
 
 
-dj-database-url==0.5.0
+
 Django==3.1.5
 django-heroku==0.0.0
 django-postgres-extensions==0.9.3
