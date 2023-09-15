@@ -125,8 +125,6 @@ def get_user(request):
 @api_view(['POST'])
 def logout_view(request):
     session = request.data['token']
-    print("SESSION BELOW")
-    print(session)
     
     data = {}
 
@@ -134,17 +132,13 @@ def logout_view(request):
     try:
         for token in Token.objects.all():
             if token.token == session:
-                print("FOUND TOKEN SESSION")
                 token1 = token
         data['response'] = "Success"
     except:
-        print("IN FIRST EXCEPT")
         data['response'] = "Failure"
         return Response(data)
     user = User.objects.get(token=token1)
-    print("GOT USER OBJECT")
     if user.is_guest:
-        print("IS A GUEST")
         token1.delete()
         user.delete()
     else:
@@ -154,9 +148,6 @@ def logout_view(request):
         user.save()
         token1.token = "null"
         token1.save()
-        print("SAVED TOKEN AND USER DATA")
-    print("DATA RETURNED BELOW")
-    print(data)
     return Response(data)
 
 @api_view(['POST'])
