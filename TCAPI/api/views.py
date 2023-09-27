@@ -715,13 +715,12 @@ def send_code(request):
 
 @api_view(['POST'])
 def change_password(request):
-    data = {
-        "response": True,
-        "expired": False,
-        "message": "",
-        "error_type": 0
-    }
     if request.data['code'] == "SAVE":
+        data = {
+            "response": True,
+            "message": "",
+            "error_type": 0
+        }
         try:
             password = request.data['password']
             if password.strip() == "":
@@ -751,6 +750,12 @@ def change_password(request):
             data["message"] = "Something went wrong."
         return Response(data)
 
+    data = {
+        "response": True,
+        "expired": False,
+        "message": "",
+        "error_type": 0
+    }
     code = request.data['code']
     password = request.data['password']
     if password.strip() == "":
