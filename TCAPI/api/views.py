@@ -753,11 +753,6 @@ def change_password(request):
             user.is_guest = False
             print("SET THE GUEST")
             user.save()
-            print("SAVED USER")
-            data = {
-                "response": True
-            }
-            print("SET THE DATA RESPONSE")
         except:
             print("IN EXCEPT BLOCK")
             data["response"] = False
