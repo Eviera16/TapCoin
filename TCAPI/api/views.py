@@ -728,7 +728,6 @@ def change_password(request):
                 data["response"] = False
                 data["error_type"] = 0
                 data["message"] = "Password can't be blank."
-                data["expired"] = False
                 return Response(data)
             token = Token.objects.get(token=request.data['token'])
             user = User.objects.get(token=token)
@@ -737,7 +736,6 @@ def change_password(request):
                 data["response"] = False
                 data["error_type"] = 1
                 data["message"] = "Password can't be previous password."
-                data["expired"] = False
                 return Response(data)
             salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
             hashed = bcrypt.hashpw(password.encode(config('ENCODE')), salt).decode()
@@ -751,7 +749,6 @@ def change_password(request):
             data["response"] = False
             data["error_type"] = 3
             data["message"] = "Something went wrong."
-            data["expired"] = False
         return Response(data)
 
     code = request.data['code']
