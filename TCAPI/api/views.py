@@ -732,13 +732,8 @@ def change_password(request):
                 return Response(data)
             token = Token.objects.get(token=request.data['token'])
             user = User.objects.get(token=token)
-            ser_data = {
-                "username": user.username,
-                "password": password
-            }
-            serializer = LoginSerializer(data=ser_data)
-
-            if serializer.is_valid():
+            newPW = bcrypt.hashpw(password.encode(config('ENCODE')), user.password.encode(config('ENCODE')))
+            if newPW == user.password.encode(config('ENCODE')):
                 data["response"] = False
                 data["error_type"] = 1
                 data["message"] = "Password can't be previous password."
