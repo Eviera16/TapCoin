@@ -743,14 +743,21 @@ def change_password(request):
                 data["message"] = "Password can't be previous password."
                 print(data)
                 return Response(data)
+            print("PASSWORDS ARE DIFFERENT")
             salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
+            print("GOT THE SALT")
             hashed = bcrypt.hashpw(password.encode(config('ENCODE')), salt).decode()
+            print("GOT THE HASHED")
             user.password = hashed
+            print("SET USER PASSWORD")
             user.is_guest = False
+            print("SET THE GUEST")
             user.save()
+            print("SAVED USER")
             data = {
                 "response": True
             }
+            print("SET THE DATA RESPONSE")
         except:
             print("IN EXCEPT BLOCK")
             data["response"] = False
