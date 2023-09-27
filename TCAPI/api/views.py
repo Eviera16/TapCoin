@@ -718,8 +718,28 @@ def change_password(request):
     if request.data['code'] == "SAVE":
         try:
             password = request.data['password']
+            if password.strip() == "":
+                data = {
+                    "response": False,
+                    "error_type": 0,
+                    "message": "Password can't be blank."
+                }
+                return Response(data)
             token = Token.objects.get(token=request.data['token'])
             user = User.objects.get(token=token)
+            ser_data = {
+                "username": user.username,
+                "password": password
+            }
+            serializer = LoginSerializer(data=ser_data)
+
+            if serializer.is_valid():
+                data = {
+                    "response": False,
+                    "error_type": 1,
+                    "message": "Password can't be previous password."
+                }
+                return Response(data)
             salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
             hashed = bcrypt.hashpw(password.encode(config('ENCODE')), salt).decode()
             user.password = hashed
@@ -730,18 +750,40 @@ def change_password(request):
             }
         except:
             data = {
-                "response": False
+                "response": False,
+                "error_type": 3,
+                "message": "Something went wrong."
             }
         return Response(data)
 
     code = request.data['code']
     password = request.data['password']
+    if password.strip() == "":
+        data = {
+            "response": False,
+            "error_type": 0,
+            "message": "Password can't be blank."
+        }
+        return Response(data)
     data = {
         "response": True,
         "expired": False,
         "message": ""
     }
     user = User.objects.get(p_code=int(code))
+    ser_data = {
+        "username": user.username,
+        "password": password
+    }
+    serializer = LoginSerializer(data=ser_data)
+
+    if serializer.is_valid():
+        data = {
+            "response": False,
+            "error_type": 1,
+            "message": "Password can't be previous password."
+        }
+        return Response(data)
     p_word_datetime_limit = user.p_code_time + timedelta(minutes=5)
     right_now = make_aware(datetime.datetime.now())
     try:
@@ -753,9 +795,11 @@ def change_password(request):
             data['message'] = f"Successfully saved password."
         else:
             data['message'] = "Time limit reached. Invalid code."
+            data["error_type"] = 2
             data['expired'] = True
     except:
         data['response'] = False
+        data["error_type"] = 3
         data['message'] = "Something went wrong."
 
     return Response(data)
