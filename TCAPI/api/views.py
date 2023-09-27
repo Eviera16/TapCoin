@@ -700,7 +700,7 @@ def send_code(request):
         requests.post('https://textbelt.com/text', {
             'phone': phone_number,
             'message': f'Your temporary code is: {code}',
-            'key': '0d40a9c1f04d558428eb525db9b4502e0a15cd31F5JAs5vP0Yc2JcS2TzrtsqFKd',
+            'key': '951292afc50e335e0bc2ac92e70e3ecd4030853aQFJFjuPmMccnZjNCihpssKcII',
         })
         right_now = make_aware(datetime.datetime.now())
         user.p_code = int(code)
