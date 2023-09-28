@@ -79,49 +79,61 @@ def login_view(request):
 
 @api_view(['POST'])
 def get_user(request):
+    print("IN GET USER")
     newData = {
         "token": request.data['token']
     }
+    print(newData)
     
     serializer = GetUserSerializer(data=newData)
 
     data = {}
 
     if serializer.is_valid():
+        print("SERIALIZER VALID")
         user = serializer.save()
         data['response'] = "Getting your information"
         data['username'] = user.username
         data['first_name'] = user.first_name
         data['last_name'] = user.last_name
         try:
+            print("IN TRY BLOCK")
             data['wins'] = user.wins
             data['losses'] = user.losses
             data['best_streak'] = user.best_streak
             data['win_streak'] = user.win_streak
         except:
+            print("IN EXCEPT BLOCK")
             pass
         if type(user.friends) == list:
+            print("USER HAS FRIENDS")
             data['friends'] = user.friends
         else:
+            print("USER HAS 0 FRIENDS")
             data['friends'] = ["0"]
         hasInvites = False
         invites = []
         for invite in GameInvite.objects.all():
             if invite.reciever == user.username:
+                print("USER HAS INVITES")
                 hasInvites = True
                 invites.append(invite.sender)
         data['hasInvite'] = hasInvites
         data['invites'] = invites
         data['is_guest'] = user.is_guest
         if user.phone_number:
+            print("USER HAS PHONE NUMBER")
             data['phone_number'] = user.phone_number
             if user.has_phone_number == False:
+                print("USER HAS PHONE NUMBER WAS FALSE")
                 user.has_phone_number = True
                 data['HPN'] = True
                 user.save()
         else:
+            print("USER HAS NO PHONE NUMBER")
             data['phone_number'] = "No Phone number"
     else: 
+        print("SERIALIZER ERRORS")
         data = serializer.errors
     return Response(data)
 
