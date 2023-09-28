@@ -112,12 +112,15 @@ def get_user(request):
                 invites.append(invite.sender)
         data['hasInvite'] = hasInvites
         data['invites'] = invites
-        data['HPN'] = user.has_phone_number
         data['is_guest'] = user.is_guest
         if user.phone_number:
             data['phone_number'] = user.phone_number
+            if user.has_phone_number == False:
+                user.has_phone_number = True
+                data['HPN'] = True
+                user.save()
         else:
-            data['phone_number'] = "Phone number"
+            data['phone_number'] = "No Phone number"
     else: 
         data = serializer.errors
     return Response(data)
