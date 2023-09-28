@@ -133,6 +133,8 @@ def get_user(request):
     else: 
         print("SERIALIZER ERRORS")
         data = serializer.errors
+    print("DATA BELOW")
+    print(data)
     return Response(data)
 
 @api_view(['POST'])
