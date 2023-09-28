@@ -124,11 +124,9 @@ def get_user(request):
         if user.phone_number:
             print("USER HAS PHONE NUMBER")
             data['phone_number'] = user.phone_number
-            if user.has_phone_number == False:
-                print("USER HAS PHONE NUMBER WAS FALSE")
-                user.has_phone_number = True
-                data['HPN'] = True
-                user.save()
+            user.has_phone_number = True
+            data['HPN'] = True
+            user.save()
         else:
             print("USER HAS NO PHONE NUMBER")
             data['phone_number'] = "No Phone number"
