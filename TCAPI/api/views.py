@@ -130,6 +130,7 @@ def get_user(request):
         else:
             print("USER HAS NO PHONE NUMBER")
             data['phone_number'] = "No Phone number"
+            data['HPN'] = False
     else: 
         print("SERIALIZER ERRORS")
         data = serializer.errors
