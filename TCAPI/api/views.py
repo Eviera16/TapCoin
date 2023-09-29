@@ -84,6 +84,7 @@ def get_user(request):
         "token": request.data['token']
     }
     print(newData)
+    de_queue = request.data['de_queue']
     
     serializer = GetUserSerializer(data=newData)
 
@@ -136,6 +137,10 @@ def get_user(request):
         data = serializer.errors
     print("DATA BELOW")
     print(data)
+    if de_queue:
+        user.in_queue = False
+        user.in_game = False
+        user.save()
     return Response(data)
 
 @api_view(['POST'])
