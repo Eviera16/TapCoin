@@ -871,3 +871,20 @@ def save(request):
         data['response'] = "Something went wrong: " + e
 
     return Response(data)
+
+@api_view(['POST'])
+def save_wallet(request):
+    try:
+        wallet_address = request.data['wallet']
+        if wallet_address != "None":
+            print("THE WALLET ADDRESS IS BELOW")
+            data = {
+                "response": "SUCCESS"
+            }
+            return Response(data)
+    except:
+        print("IN THE EXCEPT BLOCK")
+        data = {
+            "response": "Something went wrong."
+        }
+        return Response(data)
