@@ -12,13 +12,16 @@ from random import randrange
 import datetime
 from datetime import timedelta
 from django.utils.timezone import make_aware
+from web3 import Web3
 
-
+w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:8545'))
 queue_name = "A"
 queue_A_count = 1
 queue_B_count = 1
 queue_C_count = 1
 queue_D_count = 1
+
+contract_abi_const = [{'inputs': [{'internalType': 'address', 'name': '_taptapCoinAddress', 'type': 'address'}, {'internalType': 'address', 'name': '_priceFeedAddress', 'type': 'address'}], 'stateMutability': 'nonpayable', 'type': 'constructor', 'name': 'constructor'}, {'anonymous': False, 'inputs': [{'indexed': True, 'internalType': 'address', 'name': 'previousOwner', 'type': 'address'}, {'indexed': True, 'internalType': 'address', 'name': 'newOwner', 'type': 'address'}], 'name': 'OwnershipTransferred', 'type': 'event'}, {'inputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'name': 'activePlayers', 'outputs': [{'internalType': 'address payable', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'addActivePlayer', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'newAccount', 'type': 'address'}, {'internalType': 'string', 'name': 'code', 'type': 'string'}], 'name': 'addWallet', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'winner', 'type': 'address'}], 'name': 'awardTapTapCoin', 'outputs': [], 'stateMutability': 'payable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'winner', 'type': 'address'}, {'internalType': 'uint256', 'name': 'percentage', 'type': 'uint256'}], 'name': 'calculateWinnings', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'checkForUser', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'checkUserIsActive', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'checkUserPassedRECAPTCHA', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'string', 'name': 'str1', 'type': 'string'}, {'internalType': 'string', 'name': 'str2', 'type': 'string'}], 'name': 'compare', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'pure', 'type': 'function'}, {'inputs': [], 'name': 'getCurrentActualUsdOneCentCost', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'getPrice', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'getTotalTapTapCoinSupply', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}, {'internalType': 'uint256', 'name': 'dataIndex', 'type': 'uint256'}], 'name': 'getTransactionData', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'getUsersGamesCount', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'getUsersStreakCount', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'owner', 'outputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}, {'internalType': 'string', 'name': 'code', 'type': 'string'}, {'internalType': 'uint256', 'name': 'transaction_price', 'type': 'uint256'}], 'name': 'passRECAPTCHA', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'name': 'playerIndexes', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address[]', 'name': 'users', 'type': 'address[]'}], 'name': 'removeActivePlayer', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [], 'name': 'renounceOwnership', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'setUsersGamesTo100', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'name': 'streakBoard', 'outputs': [{'internalType': 'uint256', 'name': 'wins', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'games', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'waitTimeStart', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'passedRECAPTCHA', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidUser', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidRECAPTCHA', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isActive', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isWinner', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isAboveZero', 'type': 'bool'}, {'internalType': 'bool', 'name': 'has100Games', 'type': 'bool'}, {'internalType': 'bool', 'name': 'skipping', 'type': 'bool'}, {'components': [{'internalType': 'uint256', 'name': 'addWalletTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'recaptchaTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_1', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_2', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_3', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_4', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_5', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'totalTransactionAmount', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'hasTotalTransactions', 'type': 'bool'}], 'internalType': 'struct TapCoinGame.TotalTransactions', 'name': 'totalTransactions', 'type': 'tuple'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'taptapCoin', 'outputs': [{'internalType': 'contract IERC20', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'newOwner', 'type': 'address'}], 'name': 'transferOwnership', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'winner', 'type': 'address'}, {'internalType': 'address', 'name': 'loser', 'type': 'address'}, {'internalType': 'uint256', 'name': 'transaction_price_winner', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_price_loser', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'isDevEnv', 'type': 'bool'}, {'internalType': 'uint256', 'name': 'percentage', 'type': 'uint256'}], 'name': 'updatePlayersWins', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'nonpayable', 'type': 'function'}]
 
 @api_view(['POST'])
 def registration_view(request):
@@ -878,12 +881,27 @@ def save_wallet(request):
         wallet_address = request.data['wallet']
         if wallet_address != "None":
             print("THE WALLET ADDRESS IS BELOW")
+            print(wallet_address)
+            # Load the contract ABI and address
+            contract_address = config('CONTRACT_ADDRESS')  # Replace with your contract address
+            contract_abi = contract_abi_const
+            print("SET THE CONTRACT ADDRRESS AND ABI")
+
+            # Create a contract object
+            contract = w3.eth.contract(address=contract_address, abi=contract_abi)
+            print("CREATED THE CONTRACT VARIABLE")
+
+            # Interact with the contract (e.g., call functions)
+            result = contract.functions.addWallet("0xf879FA272A149906d5d85943De35f7dc383AdeD0", "TEMPORARYADDWALLETPASSCODE").call()
+            print("RESULT IS BELOW")
+            print(result)
             data = {
                 "response": "SUCCESS"
             }
             return Response(data)
-    except:
+    except Exception as e:
         print("IN THE EXCEPT BLOCK")
+        print(e)
         data = {
             "response": "Something went wrong."
         }
