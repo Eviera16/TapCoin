@@ -30,6 +30,7 @@ class User(models.Model):
     streak_time = models.DateTimeField(verbose_name="win streak time", null=True)
     date_joined = models.DateTimeField(verbose_name="date joined", auto_now_add=True)
     last_login = models.DateTimeField(verbose_name="last login", auto_now=True)
+    dev_ganache_wallet_address = models.CharField(max_length=60, null=True, unique=True)
 
     def __unicode__(self):
         return self.username
