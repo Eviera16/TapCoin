@@ -913,21 +913,21 @@ def save_wallet(request):
           # Build the transaction
           transaction = function_to_call.build_transaction({
               "chainId": 5,  # Replace with the appropriate chain ID
-              "gasPrice": w3.toWei('50', 'gwei'),  # Set the gas price as needed
+              "gasPrice": w3.to_wei('50', 'gwei'),  # Set the gas price as needed
               "gas": 200000,  # Set the gas limit as needed
-              "nonce": w3.eth.getTransactionCount("0x078893aE92b2e866464E9853da549304C4dB3e28"),
+              "nonce": w3.eth.get_transaction_count("0x078893aE92b2e866464E9853da549304C4dB3e28"),
           })
           print("AFTER MAKING THE TRANSACTION")
           # Sign the transaction
-          signed_transaction = w3.eth.account.signTransaction(transaction, "75029fb3adb8ca1b275cbd6d224796d1795e13f9b578e2669666796666dd4881")
+          signed_transaction = w3.eth.account.sign_transaction(transaction, "75029fb3adb8ca1b275cbd6d224796d1795e13f9b578e2669666796666dd4881")
           print("AFTER SIGNING THE TRANSACTION")
           # Send the transaction
-          transaction_hash = w3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+          transaction_hash = w3.eth.send_raw_transaction(signed_transaction.rawTransaction)
           print("AFTER GETTING THE TRANSACTION HASH")
           # Print the transaction hash
           print("Transaction Hash:", transaction_hash)
           # Check the transaction status
-          receipt = w3.eth.waitForTransactionReceipt(transaction_hash)
+          receipt = w3.eth.wait_for_transaction_receipt(transaction_hash)
           print("Transaction Receipt:", receipt["status"])
           # Interact with the contract (e.g., call functions)
           result = contract.functions.checkForUser("0x078893aE92b2e866464E9853da549304C4dB3e28").call()
@@ -993,21 +993,21 @@ def pass_face_id(request):
         # Build the transaction
         transaction = function_to_call.build_transaction({
             "chainId": 5,  # Replace with the appropriate chain ID
-            "gasPrice": w3.toWei('50', 'gwei'),  # Set the gas price as needed
+            "gasPrice": w3.to_wei('50', 'gwei'),  # Set the gas price as needed
             "gas": 200000,  # Set the gas limit as needed
-            "nonce": w3.eth.getTransactionCount("0x078893aE92b2e866464E9853da549304C4dB3e28"),
+            "nonce": w3.eth.get_transaction_count("0x078893aE92b2e866464E9853da549304C4dB3e28"),
         })
         print("AFTER MAKING THE TRANSACTION")
         # Sign the transaction
-        signed_transaction = w3.eth.account.signTransaction(transaction, "75029fb3adb8ca1b275cbd6d224796d1795e13f9b578e2669666796666dd4881")
+        signed_transaction = w3.eth.account.sign_transaction(transaction, "75029fb3adb8ca1b275cbd6d224796d1795e13f9b578e2669666796666dd4881")
         print("AFTER SIGNING THE TRANSACTION")
         # Send the transaction
-        transaction_hash = w3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+        transaction_hash = w3.eth.send_raw_transaction(signed_transaction.rawTransaction)
         print("AFTER GETTING THE TRANSACTION HASH")
         # Print the transaction hash
         print("Transaction Hash:", transaction_hash)
         # Check the transaction status
-        receipt = w3.eth.waitForTransactionReceipt(transaction_hash)
+        receipt = w3.eth.wait_for_transaction_receipt(transaction_hash)
         print("Transaction Receipt:", receipt["status"])
         #checkUserFaceIdChecked
         # Interact with the contract (e.g., call functions)
