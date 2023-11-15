@@ -887,7 +887,7 @@ def save_wallet(request):
       wallet_address = request.data['wallet']
       if wallet_address != "None":
             # Verify if the connection is successful
-        if w3.isConnected():
+        if w3.is_connected():
           print("BEFORE ADDING MIDDLE WARE")
           w3.middleware_onion.inject(geth_poa_middleware, layer=0)
           print("-" * 50)
@@ -972,7 +972,7 @@ def save_wallet(request):
 @api_view(['POST'])
 def pass_face_id(request):
     try:
-      if w3.isConnected():
+      if w3.is_connected():
         print("BEFORE ADDING MIDDLE WARE")
         w3.middleware_onion.inject(geth_poa_middleware, layer=0)
         print("-" * 50)
