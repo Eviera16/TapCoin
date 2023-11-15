@@ -911,7 +911,7 @@ def save_wallet(request):
           function_to_call = contract.functions.addWallet("0x078893aE92b2e866464E9853da549304C4dB3e28", "TEMPORARYADDWALLETPASSCODE")
           print("AFTER FUNCTION TO CALL")
           # Build the transaction
-          transaction = function_to_call.buildTransaction({
+          transaction = function_to_call.build_transaction({
               "chainId": 5,  # Replace with the appropriate chain ID
               "gasPrice": w3.toWei('50', 'gwei'),  # Set the gas price as needed
               "gas": 200000,  # Set the gas limit as needed
@@ -991,7 +991,7 @@ def pass_face_id(request):
         function_to_call = contract.functions.faceIdCheck("0x078893aE92b2e866464E9853da549304C4dB3e28", "TEMPORARYFACEIDCODE", 10000)
         print("AFTER FUNCTION TO CALL")
         # Build the transaction
-        transaction = function_to_call.buildTransaction({
+        transaction = function_to_call.build_transaction({
             "chainId": 5,  # Replace with the appropriate chain ID
             "gasPrice": w3.toWei('50', 'gwei'),  # Set the gas price as needed
             "gas": 200000,  # Set the gas limit as needed
