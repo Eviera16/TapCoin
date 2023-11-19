@@ -913,8 +913,12 @@ def save_wallet(request):
             # # Create a contract object
             contract = w3.eth.contract(address=contract_address, abi=contract_abi)
             print("CREATED THE CONTRACT VARIABLE")
-
-            function_to_call = contract.functions.addWallet("0x078893aE92b2e866464E9853da549304C4dB3e28", "TEMPORARYADDWALLETPASSCODE")
+            account = ''
+            if request.data['isUserOne'] == True:
+                account = '0x078893aE92b2e866464E9853da549304C4dB3e28'
+            else:
+                account = '0x33A4622B82D4c04a53e170c638B944ce27cffce3'
+            function_to_call = contract.functions.addWallet(account, "TEMPORARYADDWALLETPASSCODE")
             print("AFTER FUNCTION TO CALL")
             # Build the transaction
             transaction = function_to_call.build_transaction({
@@ -947,11 +951,6 @@ def save_wallet(request):
               data = {
                 "response": "FAILURE"
               }
-
-            if wallet_address == "0x078893aE92b2e866464E9853da549304C4dB3e28":
-                data["wallet_address"] = True
-            else:
-                data["wallet_address"] = False
             return Response(data)
           else:
             print("Connection Failed")
