@@ -25,7 +25,7 @@ queue_B_count = 1
 queue_C_count = 1
 queue_D_count = 1
 
-in_send_points = False
+in_update_players_wins = False
 
 contract_address_const = "0x139F25A29484F26cd16ab75C6C81A19a6066819d"
 contract_abi_const = [{'inputs': [{'internalType': 'address', 'name': '_taptapCoinAddress', 'type': 'address'}, {'internalType': 'address', 'name': '_priceFeedAddress', 'type': 'address'}], 'stateMutability': 'nonpayable', 'type': 'constructor', 'name': 'constructor'}, {'anonymous': False, 'inputs': [{'indexed': False, 'internalType': 'string', 'name': '_message', 'type': 'string'}], 'name': 'CheckingEvent', 'type': 'event'}, {'anonymous': False, 'inputs': [{'indexed': True, 'internalType': 'address', 'name': 'previousOwner', 'type': 'address'}, {'indexed': True, 'internalType': 'address', 'name': 'newOwner', 'type': 'address'}], 'name': 'OwnershipTransferred', 'type': 'event'}, {'inputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'name': 'activePlayers', 'outputs': [{'internalType': 'address payable', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'addActivePlayer', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'newAccount', 'type': 'address'}, {'internalType': 'string', 'name': 'code', 'type': 'string'}], 'name': 'addWallet', 'outputs': [{'internalType': 'address payable[]', 'name': '', 'type': 'address[]'}], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'name': 'addresses', 'outputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'winner', 'type': 'address'}], 'name': 'awardTapTapCoin', 'outputs': [], 'stateMutability': 'payable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'winner', 'type': 'address'}, {'internalType': 'uint256', 'name': 'percentage', 'type': 'uint256'}], 'name': 'calculateWinnings', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'checkForUser', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'checkUserFaceIdChecked', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'checkUserIsActive', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'string', 'name': 'str1', 'type': 'string'}, {'internalType': 'string', 'name': 'str2', 'type': 'string'}], 'name': 'compare', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'pure', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}, {'internalType': 'string', 'name': 'code', 'type': 'string'}, {'internalType': 'uint256', 'name': 'transaction_price', 'type': 'uint256'}], 'name': 'faceIdCheck', 'outputs': [{'components': [{'internalType': 'uint256', 'name': 'wins', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'games', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'waitTimeStart', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'faceIdCheck', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidUser', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidFaceId', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isActive', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isWinner', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isAboveZero', 'type': 'bool'}, {'internalType': 'bool', 'name': 'has100Games', 'type': 'bool'}, {'internalType': 'bool', 'name': 'skipping', 'type': 'bool'}, {'components': [{'internalType': 'uint256', 'name': 'addWalletTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'faceIdCheckTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_1', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_2', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_3', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_4', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_5', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'totalTransactionAmount', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'hasTotalTransactions', 'type': 'bool'}], 'internalType': 'struct TapCoinGame.TotalTransactions', 'name': 'totalTransactions', 'type': 'tuple'}], 'internalType': 'struct TapCoinGame.streakBoardValues', 'name': '', 'type': 'tuple'}], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [], 'name': 'getCurrentActualUsdOneCentCost', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'getPrice', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'getTotalTapTapCoinSupply', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}, {'internalType': 'uint256', 'name': 'dataIndex', 'type': 'uint256'}], 'name': 'getTransactionData', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'getUsersGamesCount', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'getUsersStreakCount', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'owner', 'outputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'name': 'playerIndexes', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address[]', 'name': 'users', 'type': 'address[]'}], 'name': 'removeActivePlayer', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [], 'name': 'renounceOwnership', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [], 'name': 'returnWinningsAmount', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'setUsersGamesTo100', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'name': 'streakBoard', 'outputs': [{'internalType': 'uint256', 'name': 'wins', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'games', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'waitTimeStart', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'faceIdCheck', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidUser', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidFaceId', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isActive', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isWinner', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isAboveZero', 'type': 'bool'}, {'internalType': 'bool', 'name': 'has100Games', 'type': 'bool'}, {'internalType': 'bool', 'name': 'skipping', 'type': 'bool'}, {'components': [{'internalType': 'uint256', 'name': 'addWalletTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'faceIdCheckTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_1', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_2', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_3', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_4', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_5', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'totalTransactionAmount', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'hasTotalTransactions', 'type': 'bool'}], 'internalType': 'struct TapCoinGame.TotalTransactions', 'name': 'totalTransactions', 'type': 'tuple'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'taptapCoin', 'outputs': [{'internalType': 'contract IERC20', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'testFunction', 'outputs': [{'internalType': 'string', 'name': '', 'type': 'string'}], 'stateMutability': 'pure', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'newOwner', 'type': 'address'}], 'name': 'transferOwnership', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'winner', 'type': 'address'}, {'internalType': 'address', 'name': 'loser', 'type': 'address'}, {'internalType': 'uint256', 'name': 'transaction_price_winner', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_price_loser', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'isDevEnv', 'type': 'bool'}, {'internalType': 'uint256', 'name': 'percentage', 'type': 'uint256'}], 'name': 'updatePlayersWins', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'nonpayable', 'type': 'function'}]
@@ -188,112 +188,113 @@ def logout_view(request):
 @api_view(['POST'])
 def send_points(request):
     print("***** IN SEND POINTS *****")
-    if in_send_points == False:
-        in_send_points = True
-        dev_bool = request.data['isDev']
+    dev_bool = request.data['isDev']
 
-        if request.data['type'] == "Custom":
-            data = {
-                "gameOver" : True
-            }
-            return Response(data)
-
-        if request.data['winner'] == False:
-            data = {
-                "gameOver" : True
-            }
-            return Response(data)
-
-        fPoints = request.data['fPoints']
-        sPoints = request.data['sPoints']
-        gameId = request.data['gameId']
-        game = Game.objects.get(gameId=gameId)
-        user1 = User.objects.get(username=game.first)
-        user2 = User.objects.get(username=game.second)
-        right_now = make_aware(datetime.datetime.now())
-        
-        if fPoints > sPoints:
-            print("***** FPOINTS IS GREATER *****")
-            user1.wins += 1
-
-            if user1.streak_time:
-                print("USER 1 HAS A STREAK TIME")
-                time_limit = user1.streak_time + timedelta(minutes=2)
-                if right_now < time_limit:
-                    print("STILL WITHIN THE TIME LIMITS")
-                    user1.win_streak += 1
-                else:
-                    print("NOT WITHIN THE TIME LIMITS")
-                    user1.win_streak = 1
-            else:
-                print("NO STREAK TIME")
-                user1.win_streak = 1 
-
-            if user1.win_streak > user1.best_streak:
-                print("NEW BEST STREAK")
-                user1.best_streak = user1.win_streak
-
-            user1.streak_time = right_now
-            user1.save()
-            user2.losses += 1
-            if user2.win_streak > user2.best_streak:
-                user2.best_streak = user2.win_streak
-            user2.win_streak = 0
-            user2.save()
-            game.fPoints = fPoints
-            game.sPoints = sPoints
-            game.winner = user1.username
-            game.winner_streak = user1.win_streak
-            game.save()
-        elif sPoints > fPoints:
-            print("***** SPOINTS IS GREATER *****")
-            user1.losses += 1
-            if user1.win_streak > user1.best_streak:
-                user1.best_streak = user1.win_streak
-            user1.win_streak = 0
-            user1.save()
-            user2.wins += 1
-            if user2.streak_time:
-                print("USER 2 HAS A STREAK TIME")
-                time_limit = user2.streak_time + timedelta(minutes=2)
-                if right_now < time_limit:
-                    print("STILL WITHIN THE TIME LIMITS")
-                    user2.win_streak += 1
-                else:
-                    print("NOT WITHIN TIME LIMITS")
-                    user2.win_streak = 1
-            else:
-                print("NO STREAK TIME")
-                user2.win_streak = 1
-            if user2.win_streak > user2.best_streak:
-                print("NEW BEST STREAK")
-                user2.best_streak = user2.win_streak
-            user2.streak_time = right_now
-            user2.save()
-            game.fPoints = fPoints
-            game.sPoints = sPoints
-            game.winner = user2.username
-            game.winner_streak = user2.win_streak
-            game.save()
-        else:
-            print("***** IT IS A TIE *****")
-            print("STOP")
-            game.fPoints = fPoints
-            game.sPoints = sPoints
-            game.winner = "Tie"
-            game.winner_streak = 0
-            game.save()
-        print("BEFORE UPDATE PLAYERS WINS")
-        update_players_wins(dev_bool)
-        print("AFTER UPDATE PLAYERS WINS")
+    if request.data['type'] == "Custom":
+        print("CUSTOM IS TRUE")
         data = {
             "gameOver" : True
         }
-        in_send_points = False
         return Response(data)
+
+    if request.data['winner'] == False:
+        print("WINNER IS FALSE")
+        data = {
+            "gameOver" : True
+        }
+        return Response(data)
+
+    fPoints = request.data['fPoints']
+    sPoints = request.data['sPoints']
+    gameId = request.data['gameId']
+    game = Game.objects.get(gameId=gameId)
+    user1 = User.objects.get(username=game.first)
+    user2 = User.objects.get(username=game.second)
+    right_now = make_aware(datetime.datetime.now())
+    
+    if fPoints > sPoints:
+        print("***** FPOINTS IS GREATER *****")
+        user1.wins += 1
+
+        if user1.streak_time:
+            print("USER 1 HAS A STREAK TIME")
+            time_limit = user1.streak_time + timedelta(minutes=2)
+            if right_now < time_limit:
+                print("STILL WITHIN THE TIME LIMITS")
+                user1.win_streak += 1
+            else:
+                print("NOT WITHIN THE TIME LIMITS")
+                user1.win_streak = 1
+        else:
+            print("NO STREAK TIME")
+            user1.win_streak = 1 
+
+        if user1.win_streak > user1.best_streak:
+            print("NEW BEST STREAK")
+            user1.best_streak = user1.win_streak
+
+        user1.streak_time = right_now
+        user1.save()
+        user2.losses += 1
+        if user2.win_streak > user2.best_streak:
+            user2.best_streak = user2.win_streak
+        user2.win_streak = 0
+        user2.save()
+        game.fPoints = fPoints
+        game.sPoints = sPoints
+        game.winner = user1.username
+        game.winner_streak = user1.win_streak
+        game.save()
+    elif sPoints > fPoints:
+        print("***** SPOINTS IS GREATER *****")
+        user1.losses += 1
+        if user1.win_streak > user1.best_streak:
+            user1.best_streak = user1.win_streak
+        user1.win_streak = 0
+        user1.save()
+        user2.wins += 1
+        if user2.streak_time:
+            print("USER 2 HAS A STREAK TIME")
+            time_limit = user2.streak_time + timedelta(minutes=2)
+            if right_now < time_limit:
+                print("STILL WITHIN THE TIME LIMITS")
+                user2.win_streak += 1
+            else:
+                print("NOT WITHIN TIME LIMITS")
+                user2.win_streak = 1
+        else:
+            print("NO STREAK TIME")
+            user2.win_streak = 1
+        if user2.win_streak > user2.best_streak:
+            print("NEW BEST STREAK")
+            user2.best_streak = user2.win_streak
+        user2.streak_time = right_now
+        user2.save()
+        game.fPoints = fPoints
+        game.sPoints = sPoints
+        game.winner = user2.username
+        game.winner_streak = user2.win_streak
+        game.save()
     else:
-        print("PASSING SEND POINTS")
-        pass
+        print("***** IT IS A TIE *****")
+        print("STOP")
+        game.fPoints = fPoints
+        game.sPoints = sPoints
+        game.winner = "Tie"
+        game.winner_streak = 0
+        game.save()
+    
+    print("BEFORE CHECKING FOR IN UPDATE PLAYERS WINS")
+    if (in_update_players_wins == False):
+        print("BEFORE UPDATE PLAYERS WINS")
+        update_players_wins()
+        print("AFTER UPDATE PLAYERS WINS")
+    else:
+        print("ALREADY IN UPDAE PLAYERS WINS")
+    data = {
+        "gameOver" : True
+    }
+    return Response(data)
 
 @api_view(['POST'])
 def create_game(request):
@@ -1158,7 +1159,7 @@ def pass_face_id(request):
         }
         return Response(data)
 
-def update_players_wins(isDev):
+def update_players_wins():
   print("***** IN THE UPDATE PLAYERS WINS FUNCTION *****")
   print("***** IN THE UPDATE PLAYERS WINS FUNCTION *****")
   print("***** IN THE UPDATE PLAYERS WINS FUNCTION *****")
@@ -1178,7 +1179,7 @@ def update_players_wins(isDev):
       # # Create a contract object
       contract = w3.eth.contract(address=contract_address, abi=contract_abi)
       print("CREATED THE CONTRACT VARIABLE")
-      function_to_call = contract.functions.updatePlayersWins("0x078893aE92b2e866464E9853da549304C4dB3e28", account2, 10000, 10000, isDev, 70)
+      function_to_call = contract.functions.updatePlayersWins("0x078893aE92b2e866464E9853da549304C4dB3e28", account2, 10000, 10000, 70)
       print("AFTER FUNCTION TO CALL")
       # Build the transaction
       transaction = function_to_call.build_transaction({
