@@ -286,11 +286,12 @@ def send_points(request):
     
     print("BEFORE CHECKING FOR IN UPDATE PLAYERS WINS")
     if (in_update_players_wins == False):
+        in_update_players_wins = True
         print("BEFORE UPDATE PLAYERS WINS")
         update_players_wins()
         print("AFTER UPDATE PLAYERS WINS")
     else:
-        print("ALREADY IN UPDAE PLAYERS WINS")
+        print("ALREADY IN UPDATE PLAYERS WINS")
     data = {
         "gameOver" : True
     }
