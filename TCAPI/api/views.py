@@ -188,7 +188,7 @@ def logout_view(request):
 @api_view(['POST'])
 def send_points(request):
     print("***** IN SEND POINTS *****")
-    dev_bool = request.data['isDev']
+    print("***** " + request.data['location'] + "*****")
 
     if request.data['type'] == "Custom":
         print("CUSTOM IS TRUE")
