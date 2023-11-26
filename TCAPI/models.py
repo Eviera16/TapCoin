@@ -14,7 +14,7 @@ class User(models.Model):
     password = models.CharField(max_length=config('CHAR', cast=int), unique=True, null=True)
     cg_Id = models.CharField(verbose_name="current game id", max_length=config('GID', cast=int), null=True)
     token = models.OneToOneField(Token, on_delete=models.CASCADE, primary_key=True)
-    friends = ArrayField(ArrayField(models.CharField(max_length=80, null=True), null=True, blank=True), null=True, blank=True, default=list)
+    friends = ArrayField(ArrayField(models.IntegerField(default=0), null=True, blank=True), null=True, blank=True, default=list)
     win_streak = models.IntegerField(verbose_name="win streak", null=True, default=0)
     best_streak = models.IntegerField(verbose_name="best streak", null=True, default=0)
     wins = models.IntegerField(verbose_name="wins", null=True, default=0)
@@ -33,6 +33,14 @@ class User(models.Model):
 
     def __unicode__(self):
         return self.username
+    
+class FriendModel(models.Model):
+    sending_user = models.CharField(max_length=config('CHAR', cast=int))
+    receiving_user = models.CharField(max_length=config('CHAR', cast=int))
+    pending_request = models.BooleanField(verbose_name="pending request", default=False)
+    users_names_string = models.CharField(verbose_name="both users names", max_length=config('DOUBLE_CHAR', cast=int), unique=True, null=True)
+    created_at = models.DateTimeField(verbose_name="created at", auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name="updated at", auto_now=True)
 
 class Game(models.Model):
     first = models.CharField(verbose_name="first player", max_length=config('CHAR', cast=int))
@@ -59,10 +67,3 @@ class CommentOrBug(models.Model):
     user = models.CharField(verbose_name="username", max_length=80)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-
-    
-
-
-
-
