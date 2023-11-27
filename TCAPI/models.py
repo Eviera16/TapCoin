@@ -6,11 +6,17 @@ class Token(models.Model):
     token = models.CharField(max_length=config('TK', cast=int))
     created_at = models.DateTimeField(auto_now_add=True)
 
+class UsersSecurityQuestionsAnswers(models.Model):
+    question_1 = models.CharField(verbose_name="question one", max_length=config('DOUBLE_CHAR', cast=int))
+    answer_1 = models.CharField(verbose_name="answer one", max_length=config('DOUBLE_CHAR', cast=int))
+    question_2 = models.CharField(verbose_name="question two", max_length=config('DOUBLE_CHAR', cast=int))
+    answer_2 = models.CharField(verbose_name="answer two", max_length=config('DOUBLE_CHAR', cast=int))
+
 class User(models.Model):
     first_name = models.CharField(verbose_name="first name", max_length=config('CHAR', cast=int))
     last_name = models.CharField(verbose_name="last name", max_length=config('CHAR', cast=int))
     username = models.CharField(max_length=config('CHAR', cast=int), unique=True, null=True)
-    phone_number = models.CharField(max_length=16, null=True)
+    phone_number = models.CharField(max_length=16, null=True, unique=True)
     password = models.CharField(max_length=config('CHAR', cast=int), unique=True, null=True)
     cg_Id = models.CharField(verbose_name="current game id", max_length=config('GID', cast=int), null=True)
     token = models.OneToOneField(Token, on_delete=models.CASCADE, primary_key=True)
@@ -28,6 +34,7 @@ class User(models.Model):
     has_phone_number = models.BooleanField(verbose_name="has a phone number", default=False)
     p_code_time = models.DateTimeField(verbose_name="password code time added", null=True)
     streak_time = models.DateTimeField(verbose_name="win streak time", null=True)
+    security_questions_answers = models.OneToOneField(UsersSecurityQuestionsAnswers, on_delete=models.CASCADE, null=True)
     date_joined = models.DateTimeField(verbose_name="date joined", auto_now_add=True)
     last_login = models.DateTimeField(verbose_name="last login", auto_now=True)
 
@@ -65,5 +72,10 @@ class GameInvite(models.Model):
 class CommentOrBug(models.Model):
     message = models.CharField(verbose_name="CommentOrBug", max_length=150)
     user = models.CharField(verbose_name="username", max_length=80)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class SecurityQuestionsText(models.Model):
+    text = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
