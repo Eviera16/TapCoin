@@ -1212,22 +1212,32 @@ def pass_face_id(request):
 
 @api_view(['GET'])   
 def get_security_questions(request):
-    all_security_questions = SecurityQuestionsText.objects.all()
-    count = 0
-    options1 = []
-    options2 = []
-    for q in all_security_questions:
-        if count < 4:
-            options1.append(q.text)
-        else:
-            options2.append(q.text)
-        count+=1
-    data={
-        "options_1": options1,
-        "options_2": options2
-    }
-    return Response(data)
-
+    try:
+        all_security_questions = SecurityQuestionsText.objects.all()
+        count = 0
+        options1 = []
+        options2 = []
+        for q in all_security_questions:
+            if count < 4:
+                options1.append(q.text)
+            else:
+                options2.append(q.text)
+            count+=1
+        data={
+            "options_1": options1,
+            "options_2": options2
+        }
+        print("GOT BOTH OPTIONS")
+        print(options1)
+        print(options2)
+        return Response(data)
+    except:
+        print("SOMETHING WENT WRING")
+        data={
+            "options_1": "Nothing",
+            "options_2": "Nothing"
+        }
+        return Response(data)
 
 @api_view(['POST'])
 def save_users_security_questions(request):
