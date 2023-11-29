@@ -13,8 +13,8 @@ class UsersSecurityQuestionsAnswers(models.Model):
     answer_2 = models.CharField(verbose_name="answer two", max_length=config('DOUBLE_CHAR', cast=int))
 
 class User(models.Model):
-    first_name = models.CharField(verbose_name="first name", max_length=config('CHAR', cast=int))
-    last_name = models.CharField(verbose_name="last name", max_length=config('CHAR', cast=int))
+    first_name = models.CharField(verbose_name="first name", max_length=config('CHAR', cast=int), null=True)
+    last_name = models.CharField(verbose_name="last name", max_length=config('CHAR', cast=int), null=True)
     username = models.CharField(max_length=config('CHAR', cast=int), unique=True, null=True)
     phone_number = models.CharField(max_length=16, null=True)
     password = models.CharField(max_length=config('CHAR', cast=int), unique=True, null=True)

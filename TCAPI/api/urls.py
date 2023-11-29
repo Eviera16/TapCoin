@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import registration_view, get_user, logout_view, login_view, send_points, create_game, guest_login, send_cb, check_in_game, send_friendRequest, accept_friendRequest, decline_friendRequest, remove_friend, send_invite, ad_invite, send_username, send_code, change_password, save, save_wallet, pass_face_id
+from .views import registration_view, get_user, logout_view, login_view, send_points, create_game, guest_login, send_cb, check_in_game, send_friendRequest, accept_friendRequest, decline_friendRequest, remove_friend, send_invite, ad_invite, send_username, send_code, change_password, save, save_wallet, pass_face_id, get_security_questions, save_users_security_questions, check_has_questions, check_users_answers 
 
 
 app_name = "user_api"
@@ -24,5 +24,9 @@ urlpatterns = [
     path("change_password", change_password, name="changePassword"),
     path("save", save, name="save"),
     path("saveWallet", save_wallet, name="saveWallet"),
-    path("passFaceId",  pass_face_id, name="passFaceId")
+    path("passFaceId",  pass_face_id, name="passFaceId"),
+    path("get_security_questions", get_security_questions, name="getSecurityQuestions"),
+    path("save_users_security_questions", save_users_security_questions, name="saveUsersSecurityQuestions"),
+    path("check_has_questions", check_has_questions, name="checkHasQuestions"),
+    path("check_users_answers", check_users_answers, name="checkUsersAnswers")
 ]

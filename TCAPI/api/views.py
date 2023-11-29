@@ -16,6 +16,7 @@ from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from django.http import HttpResponse
 from pathlib import Path
+import re
 
 goerli_rpc_url = 'https://goerli.infura.io/v3/4108e6964fae4225b9f9c53f461e1cd4'
 w3 = Web3(Web3.HTTPProvider(goerli_rpc_url))
@@ -41,7 +42,7 @@ def registration_view(request):
                 data["error"] = user
                 data["isErr"] = True
                 return Response(data)
-            data['response'] = "succesfully registered a new user."
+            data['response'] = "Success"
             data['username'] = user.username
             user1 = User.objects.get(username=data['username'])
             token = user1.token
@@ -50,8 +51,21 @@ def registration_view(request):
             user1.in_queue = False
             user1.logged_in = True
             if request.data['phone_number'] != "":
-                user1.phone_number = request.data['phone_number']
-                user1.has_phone_number = True
+                validate_phone_number_pattern = "^\\+?[1-9][0-9]{7,14}$"
+                is_valid_phone_number = re.match(validate_phone_number_pattern, request.data['phone_number'])
+                print("IS VALID PHONE NUMBER BELOW")
+                print(is_valid_phone_number)
+                if is_valid_phone_number:
+                    user1.phone_number = request.data['phone_number']
+                    user1.has_phone_number = True
+                else:
+                    user1.delete()
+                    data = {
+                        "response": "Invalid phone number.",
+                        "token": "Invalid.",
+                        "username": "Invalid."
+                    }
+                    return Response(data)
             user1.save()
         else:
             data = serializer.errors
@@ -105,8 +119,14 @@ def get_user(request):
         user = serializer.save()
         data['response'] = "Getting your information"
         data['username'] = user.username
-        data['first_name'] = user.first_name
-        data['last_name'] = user.last_name
+        if user.first_name:
+            data['first_name'] = user.first_name
+        else:
+            data['first_name'] = ""
+        if user.last_name:
+            data['last_name'] = user.last_name
+        else:
+            data['last_name'] = ""
         try:
             print("IN TRY BLOCK")
             data['wins'] = user.wins
@@ -785,7 +805,56 @@ def change_password(request):
             data["error_type"] = 3
             data["message"] = "Something went wrong."
         return Response(data)
-
+    elif request.data['code'] == "Change_Password":
+        print("IN Change_Password IF STATMENT")
+        data = {
+            "response": True,
+            "message": "",
+            "error_type": 0,
+            "expired": False
+        }
+        try:
+            print("IN THE TRY BLOCK")
+            password = request.data['password']
+            if password.strip() == "":
+                data["response"] = False
+                data["error_type"] = 0
+                data["message"] = "Password can't be blank."
+                return Response(data)
+            print("AFTER CHECKING FOR EMPTY")
+            user = User.objects.get(username=request.data['username'])
+            print("GOT USER")
+            newPW = bcrypt.hashpw(password.encode(config('ENCODE')), user.password.encode(config('ENCODE')))
+            print("GOT NEW PW")
+            if newPW == user.password.encode(config('ENCODE')):
+                print("PASSWORD IS PREVIOUS PASSWORD")
+                data["response"] = False
+                data["error_type"] = 1
+                data["message"] = "Password can't be previous password."
+                print(data)
+                return Response(data)
+            print("PASSWORDS ARE DIFFERENT")
+            salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
+            print("GOT THE SALT")
+            hashed = bcrypt.hashpw(password.encode(config('ENCODE')), salt).decode()
+            print("GOT THE HASHED")
+            user.password = hashed
+            print("SET USER PASSWORD")
+            user.is_guest = False
+            print("SET THE GUEST")
+            user.save()
+            data["response"] = True
+            data["error_type"] = 0
+            data["message"] = "Success"
+            data['expired'] = False
+        except:
+            print("IN EXCEPT BLOCK")
+            data["response"] = False
+            data["error_type"] = 3
+            data["message"] = "Something went wrong."
+        print("DATA IS BELOW")
+        print(data)
+        return Response(data)
     data = {
         "response": True,
         "expired": False,
@@ -1141,6 +1210,112 @@ def pass_face_id(request):
         }
         return Response(data)
 
+@api_view(['GET'])   
+def get_security_questions(request):
+    all_security_questions = SecurityQuestionsText.objects.all()
+    count = 0
+    options1 = []
+    options2 = []
+    for q in all_security_questions:
+        if count < 4:
+            options1.append(q.text)
+        else:
+            options2.append(q.text)
+        count+=1
+    data={
+        "options_1": options1,
+        "options_2": options2
+    }
+    return Response(data)
+
+
+@api_view(['POST'])
+def save_users_security_questions(request):
+    try:
+        print("SAVING USERS SECURITY QUESTIONS")
+        print(request.data['question_1'])
+        print(request.data['answer_1'])
+        print(request.data['question_2'])
+        print(request.data['answer_2'])
+        new_security_question_object = UsersSecurityQuestionsAnswers.objects.create(
+            question_1=request.data['question_1'],
+            answer_1=request.data['answer_1'],
+            question_2=request.data['question_2'],
+            answer_2=request.data['answer_2']
+        )
+
+        token = Token.objects.get(token=request.data['token'])
+        user = User.objects.get(token=token)
+
+        user.security_questions_answers = new_security_question_object
+        user.save()
+        data = {
+            "result": "Success"
+        }
+        return Response(data)
+    except:
+        data ={
+            "result": "Failure"
+        }
+        return Response(data)
+
+@api_view(['POST'])
+def check_has_questions(request):
+    try:
+        print("IN THE TRY BLOCK")
+        user = User.objects.get(username=request.data['username'])
+        print("GOT THE USER")
+        if user.security_questions_answers == None:
+            print("USER HAS NO QUESTIONS")
+            data = {
+                "result": "User has no questions.",
+                "question_1": "None",
+                "question_2": "None",
+            }
+            return Response(data)
+        else:
+            print("USER HAS QUESTIONS")
+            print(user.security_questions_answers)
+            print("GOT THE USERS QUESTIONS OBJECT BY ID")
+            data = {
+                "result": "Success",
+                "question_1": user.security_questions_answers.question_1,
+                "question_2": user.security_questions_answers.question_2,
+            }
+            return Response(data)
+    except:
+        print("IN THE EXCEPT BLOCK")
+        data = {
+            "result": "Something went wrong.",
+            "question_1": "None",
+            "question_2": "None",
+        }
+        return Response(data)
+
+@api_view(['POST'])
+def check_users_answers(request):
+    try:
+        user = User.objects.get(username=request.data['username'])
+        if user.security_questions_answers.answer_1 == request.data['answer_1']:
+            if user.security_questions_answers.answer_2 == request.data['answer_2']:
+                print("CORRECT ANSWERS")
+                data = {
+                    "result": True
+                }
+                return Response(data)
+        print("InCORRECT ANSWERS")
+        data = {
+            "result": False
+        }
+        return Response(data)
+    except:
+        print("In Except Block")
+        data = {
+            "result": False
+        }
+        return Response(data)
+
+
 def update_players_wins():
   print("***** IN THE UPDATE PLAYERS WINS FUNCTION *****")
   print("***** IN THE UPDATE PLAYERS WINS FUNCTION *****")
@@ -1205,8 +1380,6 @@ def update_players_wins():
         "result": "Something went wrong."
     }
     return Response(data)
-    
-
 
 ##################################################################################################################################################
 ##################################################################################################################################################
