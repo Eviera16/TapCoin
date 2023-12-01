@@ -167,6 +167,7 @@ def get_user(request):
         data['hasInvite'] = hasInvites
         data['invites'] = invites
         data['is_guest'] = user.is_guest
+        data['has_wallet'] = user.has_wallet
         if user.phone_number:
             print("USER HAS PHONE NUMBER")
             data['phone_number'] = user.phone_number
@@ -318,9 +319,12 @@ def send_points(request):
         game.winner_streak = 0
         game.save()
     
-    print("BEFORE UPDATE PLAYERS WINS")
-    update_players_wins()
-    print("AFTER UPDATE PLAYERS WINS")
+    if user1.has_wallet and user2.has_wallet:
+        print("BEFORE UPDATE PLAYERS WINS")
+        update_players_wins()
+        print("AFTER UPDATE PLAYERS WINS")
+    else:
+        print("NO WALLETS")
     data = {
         "gameOver" : True
     }
@@ -431,10 +435,16 @@ def check_in_game(request):
 @api_view(['POST'])
 def send_friendRequest(request):
     try:
+        print("IN SEND FRIEND REQUEST")
+        print("1")
         token1 = Token.objects.get(token=request.data['token'])
+        print("2")
         user1 = User.objects.get(token=token1)
+        print("3")
         user2 = User.objects.get(username=request.data['username'])
+        print("4")
         if user1 == user2:
+            print("5")
             data = {
                 "result": "Cannot send request to self.",
                 "friends": "No friends"
@@ -443,7 +453,9 @@ def send_friendRequest(request):
         # Check if FriendModel already created with both usernames
         users_usernames_type1 = user1.username + user2.username
         users_usernames_type2 = user2.username + user1.username
+        print("6")
         try:
+            print("7")
             FriendModel.objects.get(users_names_string=users_usernames_type1)
             data = {
                     "result": "Already created a friend request with: ",
@@ -451,7 +463,9 @@ def send_friendRequest(request):
                 }
             return Response(data)
         except:
+            print("8")
             try:
+                print("9")
                 FriendModel.objects.get(users_names_string=users_usernames_type2)
                 data = {
                     "result": "Already created a friend request with: ",
@@ -459,30 +473,42 @@ def send_friendRequest(request):
                 }
                 return Response(data)
             except:
+                print("10")
                 pass
+        print("11")
         # Create FriendModel with both user names | make pending_request True
         new_friend_model = FriendModel.objects.create(sending_user=user1.username, receiving_user=user2.username, pending_request=True, users_names_string=users_usernames_type1)
+        print("12")
         # Capture FriendModel Id
         new_friend_model_id = new_friend_model.id
+        print("13")
         # Save FriendModel Id in both users friends list
         if user1.friends:
-            user1.friends.extend(new_friend_model_id)
+            print("14")
+            user1.friends.append(new_friend_model_id)
         else:
+            print("15")
             user1_friends = [new_friend_model_id] 
             user1.friends = user1_friends
         if user2.friends:
-            user2.friends.extend(new_friend_model_id)
+            print("16")
+            user2.friends.append(new_friend_model_id)
         else:
+            print("17")
             user2_friends = [new_friend_model_id] 
             user2.friends = user2_friends
+        print("18")
         user1.save()
         user2.save()
+        print("19")
         data = {
             "result": "Success",
             "friends": user2.username
         }
         return Response(data)
-    except:
+    except Exception as e:
+        print("20")
+        print(e)
         data = {
             "result": "Could not find username.",
             "friends": "No friends"
@@ -912,6 +938,11 @@ def save(request):
 
     try:
         print("IN TRY BLOCK")
+        print(request.data['question_1'])
+        print(request.data['question_2'])
+        print(request.data['answer_1'])
+        print(request.data['answer_2'])
+        print(request.data['edit_qnas'])
         token = Token.objects.get(token=request.data['token'])
         print("CREATED TOKEN")
         user = User.objects.get(token=token)
@@ -933,6 +964,16 @@ def save(request):
         print("SAVED PHONE NUMBER")
         user.save()
         print("SAVED")
+        if request.data['edit_qnas']:
+            print("EDITING QUESTIONS AND ANSWERS")
+            users_qnas = user.security_questions_answers
+            users_qnas.question_1 = request.data['question_1']
+            users_qnas.question_2 = request.data['question_2']
+            users_qnas.answer_1 = request.data['answer_1']
+            users_qnas.answer_2 = request.data['answer_2']
+            users_qnas.save()
+            user.save()
+            print("SAVED EVERYTHING HERE")
         if request.data['guest']:
             print("IS A GUEST")
             data['response'] = "Guest"
@@ -1325,6 +1366,49 @@ def check_users_answers(request):
         }
         return Response(data)
 
+@api_view(['POST'])
+def get_users_questions_answers(request):
+    print("IN GETTING THE USERS Q AND A FUNCTION")
+    print("IN GETTING THE USERS Q AND A FUNCTION")
+    print("IN GETTING THE USERS Q AND A FUNCTION")
+    print("IN GETTING THE USERS Q AND A FUNCTION")
+    try:
+        print("IN THE TRY BLOCK")
+        token = Token.objects.get(token=request.data['token'])
+        user = User.objects.get(token=token)
+        print("GOT THE USER")
+        if user.security_questions_answers == None:
+            print("USER HAS NO QUESTIONS")
+            data = {
+                "result": "User has no questions.",
+                "question_1": "None",
+                "question_2": "None",
+                "answer_1": "None",
+                "asnwer_2": "None"
+            }
+            return Response(data)
+        else:
+            print("USER HAS QUESTIONS")
+            print(user.security_questions_answers)
+            print("GOT THE USERS QUESTIONS OBJECT BY ID")
+            data = {
+                "result": "Success",
+                "question_1": user.security_questions_answers.question_1,
+                "question_2": user.security_questions_answers.question_2,
+                "answer_1": user.security_questions_answers.answer_1,
+                "answer_2": user.security_questions_answers.answer_2
+            }
+            return Response(data)
+    except:
+        print("IN THE EXCEPT BLOCK")
+        data = {
+            "result": "Something went wrong.",
+            "question_1": "None",
+            "question_2": "None",
+            "answer_1": "None",
+            "asnwer_2": "None"
+        }
+        return Response(data)
 
 def update_players_wins():
   print("***** IN THE UPDATE PLAYERS WINS FUNCTION *****")
