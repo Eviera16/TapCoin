@@ -36,6 +36,8 @@ class User(models.Model):
     streak_time = models.DateTimeField(verbose_name="win streak time", null=True)
     security_questions_answers = models.OneToOneField(UsersSecurityQuestionsAnswers, on_delete=models.CASCADE, null=True)
     has_wallet = models.BooleanField(verbose_name="has wallet", default=False)
+    is_active = models.BooleanField(verbose_name="is active", default=False, null=True)
+    last_active_date = models.DateTimeField(verbose_name="last active date", auto_now=True, null=True)
     date_joined = models.DateTimeField(verbose_name="date joined", auto_now_add=True)
     last_login = models.DateTimeField(verbose_name="last login", auto_now=True)
 

@@ -9,8 +9,7 @@ import os
 import bcrypt
 import requests
 from random import randrange
-import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from django.utils.timezone import make_aware
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
@@ -25,6 +24,7 @@ queue_A_count = 1
 queue_B_count = 1
 queue_C_count = 1
 queue_D_count = 1
+_current_active_date = None
 
 contract_address_const = "0x4B6407f97f8dB2a8f7416595C22051F3D9e71Ce7"
 contract_abi_const = [{'inputs': [{'internalType': 'address', 'name': '_taptapCoinAddress', 'type': 'address'}, {'internalType': 'address', 'name': '_priceFeedAddress', 'type': 'address'}], 'stateMutability': 'nonpayable', 'type': 'constructor', 'name': 'constructor'}, {'anonymous': False, 'inputs': [{'indexed': False, 'internalType': 'string', 'name': '_message', 'type': 'string'}], 'name': 'CheckingEvent', 'type': 'event'}, {'anonymous': False, 'inputs': [{'indexed': True, 'internalType': 'address', 'name': 'previousOwner', 'type': 'address'}, {'indexed': True, 'internalType': 'address', 'name': 'newOwner', 'type': 'address'}], 'name': 'OwnershipTransferred', 'type': 'event'}, {'inputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'name': 'activePlayers', 'outputs': [{'internalType': 'address payable', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'addActivePlayer', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'newAccount', 'type': 'address'}, {'internalType': 'string', 'name': 'code', 'type': 'string'}], 'name': 'addWallet', 'outputs': [{'internalType': 'address payable[]', 'name': '', 'type': 'address[]'}], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'name': 'addresses', 'outputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'winner', 'type': 'address'}], 'name': 'awardTapTapCoin', 'outputs': [], 'stateMutability': 'payable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'winner', 'type': 'address'}, {'internalType': 'uint256', 'name': 'percentage', 'type': 'uint256'}], 'name': 'calculateWinnings', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'checkForUser', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'checkUserFaceIdChecked', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'checkUserIsActive', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'string', 'name': 'str1', 'type': 'string'}, {'internalType': 'string', 'name': 'str2', 'type': 'string'}], 'name': 'compare', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'pure', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}, {'internalType': 'string', 'name': 'code', 'type': 'string'}, {'internalType': 'uint256', 'name': 'transaction_price', 'type': 'uint256'}], 'name': 'faceIdCheck', 'outputs': [{'components': [{'internalType': 'uint256', 'name': 'wins', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'games', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'waitTimeStart', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'faceIdCheck', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidUser', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidFaceId', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isActive', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isWinner', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isAboveZero', 'type': 'bool'}, {'internalType': 'bool', 'name': 'has100Games', 'type': 'bool'}, {'internalType': 'bool', 'name': 'skipping', 'type': 'bool'}, {'components': [{'internalType': 'uint256', 'name': 'addWalletTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'faceIdCheckTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_1', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_2', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_3', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'totalTransactionAmount', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'hasTotalTransactions', 'type': 'bool'}], 'internalType': 'struct TapCoinGame.TotalTransactions', 'name': 'totalTransactions', 'type': 'tuple'}], 'internalType': 'struct TapCoinGame.streakBoardValues', 'name': '', 'type': 'tuple'}], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [], 'name': 'getCurrentActualUsdOneCentCost', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'getPrice', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'getTotalTapTapCoinSupply', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}, {'internalType': 'uint256', 'name': 'dataIndex', 'type': 'uint256'}], 'name': 'getTransactionData', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'getUserStreakBoard', 'outputs': [{'components': [{'internalType': 'uint256', 'name': 'wins', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'games', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'waitTimeStart', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'faceIdCheck', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidUser', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidFaceId', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isActive', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isWinner', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isAboveZero', 'type': 'bool'}, {'internalType': 'bool', 'name': 'has100Games', 'type': 'bool'}, {'internalType': 'bool', 'name': 'skipping', 'type': 'bool'}, {'components': [{'internalType': 'uint256', 'name': 'addWalletTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'faceIdCheckTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_1', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_2', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_3', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'totalTransactionAmount', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'hasTotalTransactions', 'type': 'bool'}], 'internalType': 'struct TapCoinGame.TotalTransactions', 'name': 'totalTransactions', 'type': 'tuple'}], 'internalType': 'struct TapCoinGame.streakBoardValues', 'name': '', 'type': 'tuple'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'getUsersGamesCount', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'getUsersStreakCount', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'get_test_var', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'owner', 'outputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'name': 'playerIndexes', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address[]', 'name': 'users', 'type': 'address[]'}], 'name': 'removeActivePlayer', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [], 'name': 'renounceOwnership', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [], 'name': 'returnWinningsAmount', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'user', 'type': 'address'}], 'name': 'setUsersGamesTo100', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'name': 'streakBoard', 'outputs': [{'internalType': 'uint256', 'name': 'wins', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'games', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'waitTimeStart', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'faceIdCheck', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidUser', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isValidFaceId', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isActive', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isWinner', 'type': 'bool'}, {'internalType': 'bool', 'name': 'isAboveZero', 'type': 'bool'}, {'internalType': 'bool', 'name': 'has100Games', 'type': 'bool'}, {'internalType': 'bool', 'name': 'skipping', 'type': 'bool'}, {'components': [{'internalType': 'uint256', 'name': 'addWalletTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'faceIdCheckTransaction', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_1', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_2', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_3', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'totalTransactionAmount', 'type': 'uint256'}, {'internalType': 'bool', 'name': 'hasTotalTransactions', 'type': 'bool'}], 'internalType': 'struct TapCoinGame.TotalTransactions', 'name': 'totalTransactions', 'type': 'tuple'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'taptapCoin', 'outputs': [{'internalType': 'contract IERC20', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'testFunction', 'outputs': [{'internalType': 'string', 'name': '', 'type': 'string'}], 'stateMutability': 'pure', 'type': 'function'}, {'inputs': [], 'name': 'testVar', 'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'newOwner', 'type': 'address'}], 'name': 'transferOwnership', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'winner', 'type': 'address'}, {'internalType': 'address', 'name': 'loser', 'type': 'address'}, {'internalType': 'uint256', 'name': 'transaction_price_winner', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'transaction_price_loser', 'type': 'uint256'}, {'internalType': 'uint256', 'name': 'percentage', 'type': 'uint256'}], 'name': 'updatePlayersWins', 'outputs': [{'internalType': 'uint256', 'name': '', 'type': 'uint256'}], 'stateMutability': 'nonpayable', 'type': 'function'}]
@@ -136,24 +136,33 @@ def get_user(request):
         except:
             print("IN EXCEPT BLOCK")
             pass
+        active_friends_index_list = []
         if type(user.friends) == list:
             print("USER HAS FRIENDS")
             friend_names = []
+            index_count = 0
             for friend_id in user.friends:
                 friend = FriendModel.objects.get(id=friend_id)
+                temp_friend = None
                 if user.username == friend.sending_user:
+                    temp_friend = User.objects.get(username=friend.receiving_user)
                     if friend.pending_request:
                         friend_line = "Pending request to " + friend.receiving_user
                         friend_names.append(friend_line)
                     else:
                         friend_names.append(friend.receiving_user)
                 else:
+                    temp_friend = User.objects.get(username=friend.sending_user)
                     if friend.pending_request:
                         friend_line = "Friend request from " + friend.sending_user
                         friend_names.append(friend_line)
                     else:
                         friend_names.append(friend.sending_user)
+                if temp_friend.is_active:
+                    active_friends_index_list.append(index_count)
+                index_count += 1
             data['friends'] = friend_names
+            data['active_friends_index_list'] = active_friends_index_list
         else:
             print("USER HAS 0 FRIENDS")
             data['friends'] = ["0"]
@@ -178,6 +187,11 @@ def get_user(request):
             print("USER HAS NO PHONE NUMBER")
             data['phone_number'] = "No Phone number"
             data['HPN'] = False
+        user.last_active_date = datetime.now()
+        user.is_active = True
+        user.save()
+        # _current_active_date = datetime.now()
+        # check_all_users_active()
     else: 
         print("SERIALIZER ERRORS")
         data = serializer.errors
@@ -188,6 +202,22 @@ def get_user(request):
         user.in_game = False
         user.save()
     return Response(data)
+
+# def check_all_users_active():
+#     all_users = User.objects.all()
+#     print("IN CHECK FOR ALL ACTIVE USERS")
+#     if _current_active_date != None:
+#         print("CURRENT ACTIVE DATE DOES NOT EQUAL NONE")
+#         COMP_TIME = _current_active_date - timedelta(minutes=3)
+#         for user in all_users:
+#             if user.is_active:
+#                 if user.last_active_date < COMP_TIME:
+#                     user.is_active = False
+#                     user.save()
+#                 else:
+#                     print("USERS TIME IS FINE")
+#             else:
+#                 print("USER IS NOT ACTIVE")
 
 @api_view(['POST'])
 def logout_view(request):
@@ -212,6 +242,7 @@ def logout_view(request):
         user.logged_in = False
         user.in_queue = False
         user.in_game = False
+        user.is_active = False
         user.save()
         token1.token = "null"
         token1.save()
