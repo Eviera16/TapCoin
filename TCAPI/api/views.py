@@ -109,6 +109,9 @@ def get_user(request):
     }
     print(newData)
     de_queue = request.data['de_queue']
+    from_val = None
+    if request.data['from']:
+        from_val = request.data['from']
     
     serializer = GetUserSerializer(data=newData)
 
@@ -190,6 +193,13 @@ def get_user(request):
         user.last_active_date = datetime.now()
         user.is_active = True
         user.save()
+        if from_val == "Home":
+            if user.has_location == True:
+                print("USER HAS LOCATION")
+                data['has_location'] = True
+            else:
+                print("USER DOES NOT HAVE LOCATION")
+                data['has_location'] = False
         # _current_active_date = datetime.now()
         # check_all_users_active()
     else: 
@@ -1438,6 +1448,39 @@ def get_users_questions_answers(request):
             "question_2": "None",
             "answer_1": "None",
             "asnwer_2": "None"
+        }
+        return Response(data)
+
+@api_view(['POST'])
+def save_location(request):
+    try:
+        print("IN THE TRY BLOCK")
+        print(request.data['latitude'])
+        print(request.data['longitude'])
+        print(request.data['timezone'])
+        token = Token.objects.get(token=request.data['token'])
+        print("GOT THE TOKEN")
+        user = User.objects.get(token=token)
+        print("GOT THE USER")
+        user.user_latitude = request.data['latitude']
+        print("GOT LATITUDE")
+        user.user_longitude = request.data['longitude']
+        print("SET THE COORDINATES")
+        user.user_time_zone = request.data['timezone']
+        print("SET THE TIME ZONE")
+        user.has_location = True
+        print("USER LOCATION IS TRUE")
+        user.save()
+        print("SAVED USER")
+        data = {
+            "result" : "SUCCESS"
+        }
+        print("RETURNING SUCCESS")
+        return Response(data)
+    except:
+        print("SOMETHING WENT WRONG")
+        data = {
+            "result" : "Something went wrong."
         }
         return Response(data)
 
