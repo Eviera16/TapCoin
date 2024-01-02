@@ -1,6 +1,18 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from decouple import config
+from enum import Enum
+
+class LeagueEnum(Enum):
+    NOOB_TAPPER = 1
+    BAD_TAPPER = 2
+    OKAY_TAPPER = 3
+    BETTER_TAPPER = 4
+    GOOD_TAPPER = 5
+    SOLID_TAPPER = 6
+    SUPER_TAPPER = 7
+    MEGA_TAPPER = 8
+    GODLY_TAPPER = 9
 
 class Token(models.Model): 
     token = models.CharField(max_length=config('TK', cast=int))
@@ -11,6 +23,11 @@ class UsersSecurityQuestionsAnswers(models.Model):
     answer_1 = models.CharField(verbose_name="answer one", max_length=config('DOUBLE_CHAR', cast=int))
     question_2 = models.CharField(verbose_name="question two", max_length=config('DOUBLE_CHAR', cast=int))
     answer_2 = models.CharField(verbose_name="answer two", max_length=config('DOUBLE_CHAR', cast=int))
+
+class League(models.Model):
+    league_title = models.CharField(verbose_name="league title", max_length=config('CHAR', cast=int))
+    created_at = models.DateTimeField(verbose_name="created at", auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name="updated at", auto_now=True)
 
 class User(models.Model):
     first_name = models.CharField(verbose_name="first name", max_length=config('CHAR', cast=int), null=True)
@@ -25,6 +42,7 @@ class User(models.Model):
     best_streak = models.IntegerField(verbose_name="best streak", null=True, default=0)
     wins = models.IntegerField(verbose_name="wins", null=True, default=0)
     losses = models.IntegerField(verbose_name="losses", null=True, default=0)
+    league = models.IntegerField(verbose_name="league placement", choices=[(tag, tag.value) for tag in LeagueEnum], default=LeagueEnum.NOOB_TAPPER.value, null=True)
     p_code = models.IntegerField(null=True)
     in_game = models.BooleanField(verbose_name="in game", default=False)
     in_queue = models.BooleanField(verbose_name=" in queue", default=False)
