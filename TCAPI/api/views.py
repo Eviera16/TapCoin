@@ -203,12 +203,17 @@ def get_user(request):
         
         users_games = user.wins + user.losses
         if users_games >= 25:
+            print("USER HAS MORE THAN 25 GAMES")
             league_placement_val = league_placement(user.wins, users_games)
+            print("GOT THE LEAGUE PLACEMENT")
+            print(league_placement_val)
             if league_placement_val:
+                print("LEAGUE PLACEMENT IS NOT NULL")
                 user.league = league_placement_val
                 user.save()
                 data['league_placement'] = league_placement_val
         else:
+            print("USER DOES NOT HAVE MORE THAN 25 GAMES")
             data['league_placement']  = 1
         # _current_active_date = datetime.now()
         # check_all_users_active()
