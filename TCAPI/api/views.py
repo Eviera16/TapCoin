@@ -1630,7 +1630,7 @@ def league_placement(wins, games):
     print("STRING PERCENTAGE IS: ", str_percentage)
     if "." in str_percentage:
         print("HAS DECIMAL")
-        new_percentage = percentage.split(".")[0]
+        new_percentage = str_percentage.split(".")[0]
         print("NEW_PERCENTAGE: ", new_percentage)
         percentage = int(new_percentage)
         print("NEW PERCENTAGE CONVERTED TO INT: ", percentage)
