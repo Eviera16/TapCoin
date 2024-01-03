@@ -1623,31 +1623,47 @@ def update_players_wins():
     return Response(data)
 
 def league_placement(wins, games):
+    print("IN LEAGUE PLACEMENT FUNCTION")
     percentage = (wins / games) * 100
+    print("THE PERCENTAGE IS: ", percentage)
     str_percentage = str(percentage)
+    print("STRING PERCENTAGE IS: ", str_percentage)
     if "." in str_percentage:
+        print("HAS DECIMAL")
         new_percentage = percentage.split(".")[0]
+        print("NEW_PERCENTAGE: ", new_percentage)
         percentage = int(new_percentage)
+        print("NEW PERCENTAGE CONVERTED TO INT: ", percentage)
     if percentage <= 35:
+        print("IS A NOOB PLAYER")
         return LeagueEnum.NOOB_TAPPER.value
     elif percentage <= 43:
+        print("IS A BAD PLAYER")
         return LeagueEnum.BAD_TAPPER.value
     elif percentage <= 51:
+        print("IS AN OKAY PLAYER")
         return LeagueEnum.OKAY_TAPPER.value
     elif percentage <= 59:
+        print("IS A BETTER PLAYER")
         return LeagueEnum.BETTER_TAPPER.value
     elif percentage <= 67:
+        print("IS A GOOD PLAYER")
         return LeagueEnum.GOOD_TAPPER.value
     elif percentage <= 75:
+        print("IS A SOLID PLAYER")
         return LeagueEnum.SOLID_TAPPER.value
     elif percentage <= 83:
+        print("IS A SUPER PLAYER")
         return LeagueEnum.SUPER_TAPPER.value
     elif percentage <= 91:
+        print("IS A MEGA PLAYER")
         return LeagueEnum.MEGA_TAPPER.value
     elif percentage > 91:
+        print("IS A GODLY PLAYER")
         return LeagueEnum.GODLY_TAPPER.value
     else:
-        return None
+        print("IS A NOOB PLAYER IN THE LESE STATEMENT")
+        return LeagueEnum.NOOB_TAPPER.value
 
     
 
