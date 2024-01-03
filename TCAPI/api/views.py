@@ -1088,7 +1088,8 @@ def save_wallet(request):
             print("Transaction Hash:", transaction_hash)
             # Check the transaction status
             receipt = w3.eth.wait_for_transaction_receipt(transaction_hash)
-            print("Transaction Receipt:", receipt["status"])
+            print("Transaction Receipt:", receipt)
+            print("Transaction Receipt STATUS:", receipt["status"])
             # Interact with the contract (e.g., call functions)
             result = contract.functions.checkForUser("0x078893aE92b2e866464E9853da549304C4dB3e28").call()
             result2 = contract.functions.checkForUser("0x60F4a7E61B3f675C08b682204D93e5E42b6bd2c7").call()
