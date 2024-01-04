@@ -1192,6 +1192,7 @@ def save_wallet(request):
 def pass_face_id(request):
     try:
       if config('IS_HEROKU_ENV', cast=bool):
+        print("IS IN THE HEROKU IF")
         if w3.is_connected():        
           print("-" * 50)
           print("Connection Successful")
@@ -1257,6 +1258,7 @@ def pass_face_id(request):
               "passed": False
           }
       else:
+        print("IS NOT IN THE HEROKU IF")
         if w3.isConnected():        
           print("-" * 50)
           print("Connection Successful")
@@ -1297,8 +1299,13 @@ def pass_face_id(request):
           result = contract.functions.checkUserFaceIdChecked("0x078893aE92b2e866464E9853da549304C4dB3e28").call()
           print("RESULT IS BELOW")
           print(result)
+          if request.data['isUserOne'] == True:
+              sending_result = result
+          else:
+              sending_result = result2
           data = {
-            "result": "SUCCESS"
+            "result": "SUCCESS",
+              "passed": sending_result
           }
         else:
           print("Connection Failed")
