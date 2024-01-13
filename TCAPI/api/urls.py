@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import registration_view, get_user, logout_view, login_view, send_points, create_game, guest_login, send_cb, check_in_game, send_friendRequest, accept_friendRequest, decline_friendRequest, remove_friend, send_invite, ad_invite, send_username, send_code, change_password, save, save_wallet, pass_face_id, get_security_questions, save_users_security_questions, check_has_questions, check_users_answers, get_users_questions_answers, save_location, get_leaderboard_data 
+from .views import registration_view, get_user, logout_view, login_view, send_points, create_game, guest_login, send_cb, check_in_game, send_friendRequest, accept_friendRequest, decline_friendRequest, remove_friend, send_invite, ad_invite, send_username, send_code, change_password, save, save_wallet, pass_face_id, get_security_questions_text, save_users_security_questions, check_has_questions, check_users_answers, get_users_questions_answers, save_location, get_leaderboard_data, get_user_and_game
 
 
 app_name = "user_api"
@@ -25,11 +25,12 @@ urlpatterns = [
     path("save", save, name="save"),
     path("saveWallet", save_wallet, name="saveWallet"),
     path("passFaceId",  pass_face_id, name="passFaceId"),
-    path("get_security_questions", get_security_questions, name="getSecurityQuestions"),
+    path("get_security_questions_text", get_security_questions_text, name="getSecurityQuestionsText"),
     path("save_users_security_questions", save_users_security_questions, name="saveUsersSecurityQuestions"),
     path("check_has_questions", check_has_questions, name="checkHasQuestions"),
     path("check_users_answers", check_users_answers, name="checkUsersAnswers"),
     path("get_users_questions_answers", get_users_questions_answers, name="getUsersQuestionsAnswers"),
     path("save_location", save_location, name="saveLocation"),
-    path("get_leaderboard_data", get_leaderboard_data, name="getLeaderboardData")
+    path("get_leaderboard_data", get_leaderboard_data, name="getLeaderboardData"),
+    path("get_user_and_game", get_user_and_game, name="getUserAndGame")
 ]

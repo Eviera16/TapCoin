@@ -50,6 +50,7 @@ class User(models.Model):
     in_create_game = models.BooleanField(verbose_name="in create game", default=False)
     is_guest = models.BooleanField(verbose_name="is guest", default=False)
     has_phone_number = models.BooleanField(verbose_name="has a phone number", default=False)
+    has_game_invite = models.BooleanField(verbose_name="has a game invite", default=False)
     p_code_time = models.DateTimeField(verbose_name="password code time added", null=True)
     streak_time = models.DateTimeField(verbose_name="win streak time", null=True)
     security_questions_answers = models.OneToOneField(UsersSecurityQuestionsAnswers, on_delete=models.CASCADE, null=True)

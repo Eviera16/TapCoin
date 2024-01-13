@@ -104,14 +104,22 @@ def login_view(request):
 @api_view(['POST'])
 def get_user(request):
     print("IN GET USER")
+    # print(newData)
+    # de_queue = request.data['de_queue']
+    token = request.GET.get('token', None)
+    de_queue = request.GET.get('de_queue', None)
     newData = {
-        "token": request.data['token']
+        "token": token
     }
-    print(newData)
-    de_queue = request.data['de_queue']
-    from_val = None
-    if request.data['from']:
-        from_val = request.data['from']
+    # Validate and process the parameters as needed
+    if token is not None and de_queue is not None:
+        print("RECEIVED PARAMETERS PROPERLLY")
+    else:
+        # Handle invalid or missing parameters
+        error_response = {
+            'error': 'Invalid or missing parameters',
+        }
+        return Response(error_response, status=400)
     
     serializer = GetUserSerializer(data=newData)
 
@@ -122,6 +130,7 @@ def get_user(request):
         user = serializer.save()
         data['response'] = "Getting your information"
         data['username'] = user.username
+        data['hasInvite'] = False
         if user.first_name:
             data['first_name'] = user.first_name
         else:
@@ -140,6 +149,7 @@ def get_user(request):
             print("IN EXCEPT BLOCK")
             pass
         active_friends_index_list = []
+        all_game_invites = GameInvite.objects.all()
         if type(user.friends) == list:
             print("USER HAS FRIENDS")
             friend_names = []
@@ -147,20 +157,41 @@ def get_user(request):
             for friend_id in user.friends:
                 friend = FriendModel.objects.get(id=friend_id)
                 temp_friend = None
+                
                 if user.username == friend.sending_user:
                     temp_friend = User.objects.get(username=friend.receiving_user)
                     if friend.pending_request:
                         friend_line = "Pending request to " + friend.receiving_user
                         friend_names.append(friend_line)
                     else:
-                        friend_names.append(friend.receiving_user)
+                        if user.has_game_invite:
+                            try:
+                                GameInvite.objects.get(sender=friend.receiving_user)
+                                friend_line = "Game invite from " + friend.receiving_user
+                                friend_names.append(friend_line)
+                                data['hasInvite'] = True
+                            except:
+                                friend_names.append(friend.receiving_user)
+                        else:
+                            data['hasInvite'] = False
+                            friend_names.append(friend.receiving_user)
                 else:
                     temp_friend = User.objects.get(username=friend.sending_user)
                     if friend.pending_request:
                         friend_line = "Friend request from " + friend.sending_user
                         friend_names.append(friend_line)
                     else:
-                        friend_names.append(friend.sending_user)
+                        if user.has_game_invite:
+                            try:
+                                GameInvite.objects.get(sender=friend.sending_user)
+                                friend_line = "Game invite from " + friend.sending_user
+                                friend_names.append(friend_line)
+                                data['hasInvite'] = True
+                            except:
+                                friend_names.append(friend.receiving_user)
+                        else:
+                            data['hasInvite'] = False
+                            friend_names.append(friend.sending_user)
                 if temp_friend.is_active:
                     active_friends_index_list.append(index_count)
                 index_count += 1
@@ -169,15 +200,15 @@ def get_user(request):
         else:
             print("USER HAS 0 FRIENDS")
             data['friends'] = ["0"]
-        hasInvites = False
-        invites = []
-        for invite in GameInvite.objects.all():
-            if invite.reciever == user.username:
-                print("USER HAS INVITES")
-                hasInvites = True
-                invites.append(invite.sender)
-        data['hasInvite'] = hasInvites
-        data['invites'] = invites
+        # hasInvites = False
+        # invites = []
+        # for invite in GameInvite.objects.all():
+            
+        #     if invite.reciever == user.username:
+        #         print("USER HAS INVITES")
+        #         hasInvites = True
+        #         invites.append(invite.sender)
+        # data['hasInvite'] = hasInvites
         data['is_guest'] = user.is_guest
         data['has_wallet'] = user.has_wallet
         if user.phone_number:
@@ -193,13 +224,12 @@ def get_user(request):
         user.last_active_date = datetime.now()
         user.is_active = True
         user.save()
-        if from_val == "Home":
-            if user.has_location == True:
-                print("USER HAS LOCATION")
-                data['has_location'] = True
-            else:
-                print("USER DOES NOT HAVE LOCATION")
-                data['has_location'] = False
+        if user.has_location == True:
+            print("USER HAS LOCATION")
+            data['has_location'] = True
+        else:
+            print("USER DOES NOT HAVE LOCATION")
+            data['has_location'] = False
         
         users_games = user.wins + user.losses
         if users_games >= 25:
@@ -226,6 +256,8 @@ def get_user(request):
         user.in_queue = False
         user.in_game = False
         user.save()
+    print("Get User Data Is Below")
+    print(data)
     return Response(data)
 
 # def check_all_users_active():
@@ -243,6 +275,32 @@ def get_user(request):
 #                     print("USERS TIME IS FINE")
 #             else:
 #                 print("USER IS NOT ACTIVE")
+
+@api_view(['POST'])
+def get_user_and_game(request):
+    try:
+        p1_token = request.data['player1_token']
+        p2_token = request.data['player2_token']
+        user_1_token = Token.objects.get(token=p1_token)
+        user_2_token = Token.objects.get(token=p2_token)
+        user_1 = User.objects.get(token=user_1_token)
+        user_2 = User.objects.get(token=user_2_token)
+        print("SUCCESSFULLY GOT BOTH USER NAMES")
+        data = {
+            "response": True,
+            "player1_username": user_1.username,
+            "player2_username": user_2.username
+        }
+        return Response(data)
+    except:
+        print("IN THE EXCEPT")
+        data = {
+            "response": False,
+            "player1_username": "None",
+            "player2_username": "None"
+        }
+        return Response(data)
+    
 
 @api_view(['POST'])
 def logout_view(request):
@@ -653,6 +711,7 @@ def remove_friend(request):
 
 @api_view(['POST'])
 def send_invite(request):
+    print("IN SEND INVITE");
     token = Token.objects.get(token=request.data['token'])
     user1 = User.objects.get(token=token)
     user2 = User.objects.get(username=request.data['username'])
@@ -685,13 +744,24 @@ def send_invite(request):
                     "gameId": "ALREADY EXISTS"
                 }
                 return Response(data)
-    GameInvite.objects.create(sender=user1.username, reciever=user2.username, gameId=gameId)
-    Game.objects.create(first=user1.username, second=user2.username, gameId=gameId)
+    gameInvite = GameInvite.objects.create(sender=user1.username, reciever=user2.username, gameId=gameId)
+    print("GAME INVITE OBJECT IS BELOW")
+    print(gameInvite)
+    game = Game.objects.create(first=user1.username, second=user2.username, gameId=gameId)
+    print("GAME OBJECT IS BELOW")
+    print(game)
+    user1.cg_Id = gameId
+    user2.cg_Id = gameId
+    user2.has_game_invite = True
+    user1.save()
+    user2.save()
     data = {
         "first":user1.username,
         "second":user2.username,
         "gameId":gameId
     }
+    print("DATA IS BELOW")
+    print(data)
     return Response(data)
 
 @api_view(['POST'])
@@ -706,7 +776,8 @@ def ad_invite(request):
             try:
                 if request.data['cancelled'] == True:
                     data = {
-                        "result": "Cancelled"
+                        "result": "Cancelled",
+                        "gameId": sender.cg_Id
                     }
                     return Response(data)
                 else:
@@ -725,11 +796,14 @@ def ad_invite(request):
                                 deleted = True
                     if deleted:
                         data = {
-                            "result": "Cancelled"
+                            "result": "Cancelled",
+                            "gameId": sender.cg_Id
                         }
                     else:
                         data = {
-                            "result": "Soemthing went wrong"
+                            "result": "Something went wrong",
+                            "gameId": "None"
+                            
                         }
                     return Response(data)
             except:
@@ -748,11 +822,13 @@ def ad_invite(request):
                             deleted = True
                 if deleted:
                     data = {
-                        "result": "Cancelled"
+                        "result": "Cancelled",
+                        "gameId": sender.cg_Id
                     }
                 else:
                     data = {
-                        "result": "Soemthing went wrong"
+                        "result": "Soemthing went wrong",
+                        "gameId": "None"
                     }
                 return Response(data)
         else:
@@ -777,7 +853,10 @@ def ad_invite(request):
                 }
             else:
                 data = {
-                    "result": "Soemthing went wrong"
+                    "result": "Soemthing went wrong",
+                    "first":"None",
+                    "second":"None",
+                    "gameId":"None"
                 }
             return Response(data)
     except:
@@ -1003,19 +1082,21 @@ def save(request):
         print("CREATED TOKEN")
         user = User.objects.get(token=token)
         print("FOUND USER")
-        for u in User.objects.all():
-            if u.username == request.data['username']:
-                if u != user:
-                    print("INVALID USERNAME")
-                    data['response'] = "Invalid username."
-                    return Response(data)
+        if request.data['changed_username'] == True:
+            for u in User.objects.all():
+                if u.username == request.data['username']:
+                    if u != user:
+                        print("INVALID USERNAME")
+                        data['response'] = "Invalid username."
+                        return Response(data)
         print("SAVING DATA")
         user.first_name = request.data['first_name']
         print("SAVED FIRST NAME")
         user.last_name = request.data['last_name']
         print("SAVED LAST NAME")
-        user.username = request.data['username']
-        print("SAVED USERNAME")
+        if request.data['changed_username'] == True:
+            user.username = request.data['username']
+            print("SAVED USERNAME")
         user.phone_number = request.data['phone_number']
         print("SAVED PHONE NUMBER")
         user.save()
@@ -1328,7 +1409,7 @@ def pass_face_id(request):
         return Response(data)
 
 @api_view(['GET'])   
-def get_security_questions(request):
+def get_security_questions_text(request):
     try:
         all_security_questions = SecurityQuestionsText.objects.all()
         count = 0
