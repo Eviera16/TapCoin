@@ -101,7 +101,7 @@ def login_view(request):
         data = serializer.errors
     return Response(data)
 
-@api_view(['POST'])
+@api_view(['GET'])
 def get_user(request):
     print("IN GET USER")
     # print(newData)
