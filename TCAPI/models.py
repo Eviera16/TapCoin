@@ -15,17 +15,18 @@ class LeagueEnum(Enum):
     GODLY_TAPPER = 9
 
 class Token(models.Model): 
-    token = models.CharField(max_length=config('TK', cast=int))
+    token = models.CharField(max_length=config('TK', cast=int), null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class UsersSecurityQuestionsAnswers(models.Model):
-    question_1 = models.CharField(verbose_name="question one", max_length=config('DOUBLE_CHAR', cast=int))
-    answer_1 = models.CharField(verbose_name="answer one", max_length=config('DOUBLE_CHAR', cast=int))
-    question_2 = models.CharField(verbose_name="question two", max_length=config('DOUBLE_CHAR', cast=int))
-    answer_2 = models.CharField(verbose_name="answer two", max_length=config('DOUBLE_CHAR', cast=int))
+    question_1 = models.CharField(verbose_name="question one", max_length=config('DOUBLE_CHAR', cast=int), null=True)
+    answer_1 = models.CharField(verbose_name="answer one", max_length=config('DOUBLE_CHAR', cast=int), null=True)
+    question_2 = models.CharField(verbose_name="question two", max_length=config('DOUBLE_CHAR', cast=int), null=True)
+    answer_2 = models.CharField(verbose_name="answer two", max_length=config('DOUBLE_CHAR', cast=int), null=True)
 
 class League(models.Model):
-    league_title = models.CharField(verbose_name="league title", max_length=config('CHAR', cast=int))
+    league_title = models.CharField(verbose_name="league title", max_length=config('CHAR', cast=int), null=True)
     created_at = models.DateTimeField(verbose_name="created at", auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name="updated at", auto_now=True)
 
@@ -36,7 +37,7 @@ class User(models.Model):
     phone_number = models.CharField(max_length=16, null=True)
     password = models.CharField(max_length=config('CHAR', cast=int), unique=True, null=True)
     cg_Id = models.CharField(verbose_name="current game id", max_length=config('GID', cast=int), null=True)
-    token = models.OneToOneField(Token, on_delete=models.CASCADE, primary_key=True)
+    token = models.OneToOneField(Token, on_delete=models.CASCADE, primary_key=True, null=False)
     friends = ArrayField(ArrayField(models.IntegerField(default=0), null=True, blank=True), null=True, blank=True, default=list)
     win_streak = models.IntegerField(verbose_name="win streak", null=True, default=0)
     best_streak = models.IntegerField(verbose_name="best streak", null=True, default=0)
@@ -68,16 +69,16 @@ class User(models.Model):
         return self.username
     
 class FriendModel(models.Model):
-    sending_user = models.CharField(max_length=config('CHAR', cast=int))
-    receiving_user = models.CharField(max_length=config('CHAR', cast=int))
+    sending_user = models.CharField(max_length=config('CHAR', cast=int), null=True)
+    receiving_user = models.CharField(max_length=config('CHAR', cast=int), null=True)
     pending_request = models.BooleanField(verbose_name="pending request", default=False)
     users_names_string = models.CharField(verbose_name="both users names", max_length=config('DOUBLE_CHAR', cast=int), unique=True, null=True)
     created_at = models.DateTimeField(verbose_name="created at", auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name="updated at", auto_now=True)
 
 class Game(models.Model):
-    first = models.CharField(verbose_name="first player", max_length=config('CHAR', cast=int))
-    second = models.CharField(verbose_name="second player", max_length=config('CHAR', cast=int))
+    first = models.CharField(verbose_name="first player", max_length=config('CHAR', cast=int), null=True)
+    second = models.CharField(verbose_name="second player", max_length=config('CHAR', cast=int), null=True)
     winner = models.CharField(verbose_name="winner", max_length=config('CHAR', cast=int), null=True)
     winner_streak = models.IntegerField(verbose_name="winner streak", null=True)
     fPoints = models.IntegerField(verbose_name="first points", null=True)
@@ -87,8 +88,8 @@ class Game(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class GameInvite(models.Model):
-    sender = models.CharField(verbose_name="sender", max_length=80)
-    reciever = models.CharField(verbose_name="reciever", max_length=80)
+    sender = models.CharField(verbose_name="sender", max_length=80, null=True)
+    reciever = models.CharField(verbose_name="reciever", max_length=80, null=True)
     accepted = models.BooleanField(verbose_name="accepted invite", default=False)
     cancel = models.BooleanField(verbose_name="cancel invite", default=False)
     gameId = models.CharField(verbose_name="game id", max_length=16, unique=True)
