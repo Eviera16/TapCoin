@@ -5,27 +5,81 @@ import os
 import bcrypt
 from decouple import config
 
+def check_pw_complexity(pw:str):
+        symbols_arr = ["!","@", "#", "$", "%", "^", "&", "*", "(", ")", "?"]
+        if len(pw) < 8:
+            return "Password must be at least 8 charcters long."
+        has_int = False
+        has_symbol = False
+        has_lower = False
+        has_upper = False
+        for char in pw:
+            try:
+                if has_int is False:
+                    int(char)
+                    has_int = True
+                elif char in symbols_arr:
+                    has_symbol = True
+                elif char == char.lower():
+                    has_lower = True
+                elif char == char.upper():
+                    has_upper = True
+            except:
+                if char in symbols_arr:
+                    has_symbol = True
+                elif char == char.lower():
+                    has_lower = True
+                elif char == char.upper():
+                    has_upper = True
+        if has_int is False:
+            return "Password must contain at least one integer."
+        if has_symbol is False:
+            seperator = ","
+            return "Password must contain at least one symbol.[ " + seperator.join(symbols_arr) + " ]"
+        if has_lower is False:
+            return "Password must contain at least one lower case character."
+        if has_upper is False:
+            return "Password must contain at least one upper case character."
+        return "Complexity Passed."
 
 
 class RegistrationSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=config('CHAR', cast=int))
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
-
+ 
     def create(self, validated_data):
-        token = binascii.hexlify(os.urandom(config('TOKEN', cast=int))).decode()
-        pw = validated_data.pop("password")
-        salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
-        hashed = bcrypt.hashpw(pw.encode(config('ENCODE')), salt).decode()
-        token1 = Token.objects.create(token=token)
         try:
-            user = User.objects.create(**validated_data, token=token1, password=hashed)
-        except Exception as e:
-            newError = str(e)
-            newErr = newError.split("DETAIL:")[1]
-            error = newErr.split("=")[1]
-            return error
-
-        return user
+            uName = validated_data.pop("username")
+            print("VALIDATED DATA USERNAME")
+            print(uName)
+            if len(uName) <=1 or uName is None:
+                return "Username must be greater than two characters long."
+            for char in uName:
+                if char == " ":
+                    return "Username cannot have any spaces."
+            token = binascii.hexlify(os.urandom(config('TOKEN', cast=int))).decode()
+            pw = validated_data.pop("password")
+            result = check_pw_complexity(pw)
+            if result != "Complexity Passed.":
+                return result
+            print("PASSWORD COMPLEXITY PASSED")
+            salt = bcrypt.gensalt(rounds=config('ROUNDS', cast=int))
+            hashed = bcrypt.hashpw(pw.encode(config('ENCODE')), salt).decode()
+            token1 = Token.objects.create(token=token)
+            try:
+                user = User.objects.create(**validated_data, token=token1, password=hashed, username=uName)
+                print("CREATED USER BELOW")
+                print(user)
+            except Exception as e:
+                print("IS AN ERROR IN SERIALIZER")
+                newError = str(e)
+                newErr = newError.split("DETAIL:")[1]
+                error = newErr.split("=")[1]
+                return error
+            print("RETURNING THE USER NOW")
+            return user
+        except:
+            return "Something went wrong."
 
 
 class LoginSerializer(serializers.Serializer):
