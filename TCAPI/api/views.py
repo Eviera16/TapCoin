@@ -256,6 +256,10 @@ def get_user(request):
             data['league_placement']  = 1
         # _current_active_date = datetime.now()
         # check_all_users_active()
+        if user.security_questions_answers == None:
+            data['has_security_questions'] = False
+        else:
+            data['has_security_questions'] = True
     else: 
         print("SERIALIZER ERRORS")
         data = serializer.errors
@@ -1079,12 +1083,8 @@ def save(request):
     data = {
         "response" : ""
     }
-
     try:
         print("IN TRY BLOCK")
-        print(request.data['question_1'])
-        print(request.data['question_2'])
-        print(request.data['answer_1'])
         print(request.data['answer_2'])
         print(request.data['edit_qnas'])
         token = Token.objects.get(token=request.data['token'])
@@ -1110,16 +1110,6 @@ def save(request):
         print("SAVED PHONE NUMBER")
         user.save()
         print("SAVED")
-        if request.data['edit_qnas']:
-            print("EDITING QUESTIONS AND ANSWERS")
-            users_qnas = user.security_questions_answers
-            users_qnas.question_1 = request.data['question_1']
-            users_qnas.question_2 = request.data['question_2']
-            users_qnas.answer_1 = request.data['answer_1']
-            users_qnas.answer_2 = request.data['answer_2']
-            users_qnas.save()
-            user.save()
-            print("SAVED EVERYTHING HERE")
         if request.data['guest']:
             print("IS A GUEST")
             data['response'] = "Guest"
@@ -1422,8 +1412,8 @@ def get_security_questions_text(request):
     try:
         all_security_questions = SecurityQuestionsText.objects.all()
         count = 0
-        options1 = []
-        options2 = []
+        options1 = ["Select One"]
+        options2 = ["Select One"]
         for q in all_security_questions:
             if count < 4:
                 options1.append(q.text)
@@ -1550,7 +1540,7 @@ def get_users_questions_answers(request):
                 "question_1": "None",
                 "question_2": "None",
                 "answer_1": "None",
-                "asnwer_2": "None"
+                "answer_2": "None"
             }
             return Response(data)
         else:
@@ -1572,7 +1562,7 @@ def get_users_questions_answers(request):
             "question_1": "None",
             "question_2": "None",
             "answer_1": "None",
-            "asnwer_2": "None"
+            "answer_2": "None"
         }
         return Response(data)
 
