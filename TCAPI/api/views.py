@@ -1726,6 +1726,30 @@ def update_players_wins():
     }
     return Response(data)
 
+@api_view(['POST']) 
+def confirm_password(request):
+    password = request.data['password']
+    request_token = request.data['token']
+    token = Token.objects.get(token=request_token)
+    request_user = User.objects.get(token=token)
+    serializer_data = {
+        "username": request_user.username,
+        "password": password
+    }
+    serializer = LoginSerializer(data=serializer_data)
+
+    data = {}
+    if serializer.is_valid():
+        user = serializer.save()
+        if type(user) == dict:
+            data['result'] = False
+            return Response(data)
+        data['result'] = True
+    else:
+        data['result'] = False
+    
+    return Response(data)
+
 def league_placement(wins, games):
     print("IN LEAGUE PLACEMENT FUNCTION")
     percentage = (wins / games) * 100
