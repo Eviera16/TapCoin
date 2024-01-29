@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import User, Token
+from ...models import User, Token
 import binascii
 import os
 import bcrypt
@@ -136,6 +136,42 @@ class GetUserSerializer(serializers.Serializer):
             return False
 
         return user
+
+class TestPasswordSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=config('CHAR', cast=int))
+    password = serializers.CharField(max_length=config('CHAR', cast=int))
+
+    def create(self, validated_data):
+        user1 = None
+        foundUser = False
+        foundPassword = False
+        try:
+            for user in User.objects.all():
+                if user.username == validated_data['username']: 
+                    foundUser = True
+                    newPW = bcrypt.hashpw(validated_data['password'].encode(config('ENCODE')), user.password.encode(config('ENCODE')))
+                    if newPW == user.password.encode(config('ENCODE')):
+                        foundPassword = True
+                        user1 = user
+            if foundUser == False:
+                if foundPassword == False:
+                    user1 = {
+                        "error": True,
+                        "user": "Could not find username.",
+                        "password": "Incorrect Password."
+                        }
+            else:
+                if foundPassword == False:
+                    user1 = {
+                        "error": True,
+                        "user": "None",
+                        "password": "Incorrect Password"
+                    }
+                
+        except Exception as e:
+            return False
+
+        return user1
 
 class LogoutSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=config('TK', cast=int))

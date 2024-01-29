@@ -43,6 +43,7 @@ class User(models.Model):
     best_streak = models.IntegerField(verbose_name="best streak", null=True, default=0)
     wins = models.IntegerField(verbose_name="wins", null=True, default=0)
     losses = models.IntegerField(verbose_name="losses", null=True, default=0)
+    games = models.IntegerField(verbose_name="number of games", null=True, default=0)
     league = models.IntegerField(verbose_name="league placement", choices=[(tag, tag.value) for tag in LeagueEnum], default=LeagueEnum.NOOB_TAPPER.value, null=True)
     p_code = models.IntegerField(null=True)
     in_game = models.BooleanField(verbose_name="in game", default=False)

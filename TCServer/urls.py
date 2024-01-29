@@ -16,5 +16,9 @@ Including another URLconf
 from django.urls import path, include
 
 urlpatterns = [
-    path('api/user/', include('TCAPI.api.urls', 'user_api')),
+    path('tapcoinsapi/user/', include('TCAPI.api.User.urls', 'user_api')),
+    path('tapcoinsapi/game/', include('TCAPI.api.Game.urls', 'game_api')),
+    path('tapcoinsapi/friend/', include('TCAPI.api.Friend.urls', 'friend_api')),
+    path('tapcoinsapi/tapcoinsbc/', include('TCAPI.api.TapCoinsBC.urls', 'tapcoinsbc_api')),
+    path('tapcoinsapi/securityquestions/', include('TCAPI.api.SecurityQuestions.urls', 'securityquestions_api')),
 ]
