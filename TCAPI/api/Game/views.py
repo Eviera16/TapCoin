@@ -201,3 +201,75 @@ def check_in_game(request):
         data['response'] = "OUTGAME"
 
     return Response(data)
+
+def update_players_wins():
+  print("***** IN THE UPDATE PLAYERS WINS FUNCTION *****")
+  print("***** IN THE UPDATE PLAYERS WINS FUNCTION *****")
+  print("***** IN THE UPDATE PLAYERS WINS FUNCTION *****")
+  try:
+    if w3.is_connected():        
+      print("-" * 50)
+      print("Connection Successful")
+      print(w3.eth.chain_id)
+      print(w3.eth.gas_price)
+      print(w3.eth.block_number)
+      print("-" * 50)
+      account2 = '0x60F4a7E61B3f675C08b682204D93e5E42b6bd2c7'
+      contract_address = contract_address_const
+      # contract_address = config('CONTRACT_ADDRESS')  # Replace with your contract address
+      contract_abi = contract_abi_const
+      print("SET THE CONTRACT ADDRRESS AND ABI")
+      # # Create a contract object
+      contract = w3.eth.contract(address=contract_address, abi=contract_abi)
+      print("CREATED THE CONTRACT VARIABLE")
+      function_to_call = contract.functions.updatePlayersWins("0x078893aE92b2e866464E9853da549304C4dB3e28", account2, 10000, 10000, 70)
+      print("AFTER FUNCTION TO CALL")
+      # Build the transaction
+      transaction = function_to_call.build_transaction({
+          "chainId": 5,  # Replace with the appropriate chain ID
+          "gasPrice": w3.to_wei('50', 'gwei'),  # Set the gas price as needed
+          "gas": 200000,  # Set the gas limit as needed
+          "nonce": w3.eth.get_transaction_count("0x078893aE92b2e866464E9853da549304C4dB3e28"),
+      })
+      print("AFTER MAKING THE TRANSACTION")
+      # Sign the transaction
+      signed_transaction = w3.eth.account.sign_transaction(transaction, "75029fb3adb8ca1b275cbd6d224796d1795e13f9b578e2669666796666dd4881")
+      print("AFTER SIGNING THE TRANSACTION")
+      # Send the transaction
+      transaction_hash = w3.eth.send_raw_transaction(signed_transaction.rawTransaction)
+      print("AFTER GETTING THE TRANSACTION HASH")
+      # Print the transaction hash
+      print("Transaction Hash:", transaction_hash)
+      # Check the transaction status
+      receipt = w3.eth.wait_for_transaction_receipt(transaction_hash)
+      print("Transaction Receipt:", receipt["status"])
+      #checkUserFaceIdChecked
+      # Interact with the contract (e.g., call functions)
+      # returnWinningsAmount
+      result = contract.functions.getUserStreakBoard("0x078893aE92b2e866464E9853da549304C4dB3e28").call()
+      result2 = contract.functions.returnWinningsAmount().call()
+      result3 = contract.functions.getUserStreakBoard("0x60F4a7E61B3f675C08b682204D93e5E42b6bd2c7").call()
+      result4 = contract.functions.get_test_var().call()
+      result5 = contract.functions.getTotalTapTapCoinSupply().call()
+      # getTotalTapTapCoinSupply
+      print("RESULT IS BELOW")
+      print(result)
+      print("RESULT2 BELOW")
+      print(result2)
+      print("RESULT3 BELOW")
+      print(result3)
+      print("RESULT 4 BELOW")
+      print(result4)
+      print("RESULT 5 BELOW")
+      print(result5)
+    data = {
+      "result": "NOTDEVENVIORNMENT"
+    }
+    return Response(data)
+  except Exception as e:
+    print("IN THE EXCEPT BLOCK")
+    print(e)
+    data = {
+        "result": "Something went wrong."
+    }
+    return Response(data)
