@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from ...models import *
 import binascii
 import os
+from ...Utilities.helpful_functions import ping
 
 @api_view(['POST'])
 def send_friendRequest(request):
@@ -77,6 +78,7 @@ def send_friendRequest(request):
             "result": "Success",
             "friends": user2.username
         }
+        ping(True, token1.token)
         return Response(data)
     except Exception as e:
         print("20")
@@ -103,6 +105,7 @@ def accept_friendRequest(request):
         data = {
             "result": "Accepted"
         }
+        ping(True, token1.token)
         return Response(data)
     except:
         data = {
@@ -126,6 +129,7 @@ def decline_friendRequest(request):
         data = {
             "result": "Declined"
         }
+        ping(True, token1.token)
         return Response(data)
     except:
         data = {
@@ -172,6 +176,7 @@ def remove_friend(request):
         data = {
             "result": "Removed"
         }
+        ping(True, token1.token)
         return Response(data)
     except:
         print("IN SECOND EXCEPT BLOCK")
@@ -182,7 +187,7 @@ def remove_friend(request):
 
 @api_view(['POST'])
 def send_invite(request):
-    print("IN SEND INVITE");
+    print("IN SEND INVITE")
     token = Token.objects.get(token=request.data['token'])
     user1 = User.objects.get(token=token)
     user2 = User.objects.get(username=request.data['username'])
@@ -206,6 +211,7 @@ def send_invite(request):
                     "second": "ALREADY EXISTS",
                     "gameId": "ALREADY EXISTS"
                 }
+                ping(True, token.token)
                 return Response(data)
         elif gInvite.sender == user2.username:
             if gInvite.reciever == user1.username:
@@ -214,6 +220,7 @@ def send_invite(request):
                     "second": "ALREADY EXISTS",
                     "gameId": "ALREADY EXISTS"
                 }
+                ping(True, token.token)
                 return Response(data)
     gameInvite = GameInvite.objects.create(sender=user1.username, reciever=user2.username, gameId=gameId)
     print("GAME INVITE OBJECT IS BELOW")
@@ -233,6 +240,7 @@ def send_invite(request):
     }
     print("DATA IS BELOW")
     print(data)
+    ping(True, token.token)
     return Response(data)
 
 @api_view(['POST'])
@@ -250,6 +258,7 @@ def ad_invite(request):
                         "result": "Cancelled",
                         "gameId": sender.cg_Id
                     }
+                    ping(True, token.token)
                     return Response(data)
                 else:
                     for invite in GameInvite.objects.all():
@@ -276,6 +285,7 @@ def ad_invite(request):
                             "gameId": "None"
                             
                         }
+                    ping(True, token.token)
                     return Response(data)
             except:
                 for invite in GameInvite.objects.all():
@@ -296,6 +306,7 @@ def ad_invite(request):
                         "result": "Cancelled",
                         "gameId": sender.cg_Id
                     }
+                    ping(True, token.token)
                 else:
                     data = {
                         "result": "Soemthing went wrong",
@@ -322,6 +333,7 @@ def ad_invite(request):
                     "second":game.second,
                     "gameId":game.gameId
                 }
+                ping(True, token.token)
             else:
                 data = {
                     "result": "Soemthing went wrong",

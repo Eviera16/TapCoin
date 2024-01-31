@@ -11,8 +11,10 @@ import requests
 from random import randrange
 from datetime import datetime, timedelta
 from django.utils.timezone import make_aware
+from django.http import HttpResponse
 import re
 from ...Utilities.helpful_functions import ping
+from ...task import start_time_limit_for_users_streaks
 # Make sure each function is getting the Users token from the request in order to send the users token
 # to the ping function. Reg, Login and Logout will call the ping function at the end only.
 
@@ -56,6 +58,7 @@ def registration_view(request):
                         "username": "Invalid."
                     }
                     return Response(data)
+            ping(True, token.token)
             user1.save()
         else:
             data = serializer.errors
@@ -85,12 +88,16 @@ def login_view(request):
         user1.in_game = False
         user1.in_queue = False
         user1.logged_in = True
+        user1.has_wallet = True # Remove this later
         user1.save()
         token = binascii.hexlify(os.urandom(config('TOKEN', cast=int))).decode()
         token1 = user1.token
         token1.token = token
         token1.save()
         data['token'] = token
+        print("THE TOKEN IS BELOW")
+        print(token)
+        ping(True, token)
     else:
         data = serializer.errors
     return Response(data)
@@ -209,8 +216,7 @@ def get_user(request):
         else:
             data['phone_number'] = "No Phone number"
             data['HPN'] = False
-        user.last_active_date = datetime.now()
-        user.is_active = True
+        ping(True, token)
         user.save()
         if user.has_location == True:
             data['has_location'] = True
@@ -249,7 +255,8 @@ def get_user(request):
 @api_view(['POST'])
 def logout_view(request):
     session = request.data['token']
-    
+    print("THE TOKEN IS BELOW")
+    print(session)
     data = {}
 
     token1 = None
@@ -269,10 +276,8 @@ def logout_view(request):
         user.logged_in = False
         user.in_queue = False
         user.in_game = False
-        user.is_active = False
+        ping(False, token1.token)
         user.save()
-        token1.token = "null"
-        token1.save()
     return Response(data)
 
 @api_view(['POST'])
@@ -304,6 +309,7 @@ def guest_login(request):
         data['username'] = user.username
         data['error'] = False
         data['token'] = token1.token
+        ping(True, token1.token)
     except Exception as e:
         newError = str(e)
         newErr = newError.split("DETAIL:")[1]
@@ -316,6 +322,7 @@ def guest_login(request):
 
     return Response(data)
 
+# Look into these below functions for implementing ping
 @api_view(['POST'])
 def send_username(request):
     phone_number = request.data['phone_number']
@@ -333,6 +340,7 @@ def send_username(request):
             'key': '0d40a9c1f04d558428eb525db9b4502e0a15cd31F5JAs5vP0Yc2JcS2TzrtsqFKd',
         })
         data['message'] = "RESPONSE IS A SUCCESS"
+        # ping(True, user.token.token)
     except Exception as e:
         data['response'] = False
         data['message'] = f"IN THE EXCEPT BLOCK e: {e}"
@@ -514,7 +522,8 @@ def change_password(request):
         data['expired'] = False
 
     return Response(data)
-        
+
+# Look into these above functions for implementing ping      
 @api_view(['POST'])
 def save(request):
     print("IN SAVE")
@@ -554,6 +563,7 @@ def save(request):
         else:
             print("IS NOT A GUEST")
             data['response'] = "Successfully saved data."
+        ping(True, token.token)
     except Exception as e:
         print("E IS BELOW")
         print(e)
@@ -586,6 +596,7 @@ def save_location(request):
             "result" : "SUCCESS"
         }
         print("RETURNING SUCCESS")
+        ping(True, token.token)
         return Response(data)
     except:
         print("SOMETHING WENT WRONG")
@@ -615,7 +626,7 @@ def confirm_password(request):
         data['result'] = True
     else:
         data['result'] = False
-    
+    ping(True, token.token)
     return Response(data)
 
 def sort_leaderboard(e):
@@ -623,6 +634,7 @@ def sort_leaderboard(e):
     print(e)
     return e['win_percentage']
 
+# Send token for this function for ping
 @api_view(['GET']) 
 def get_leaderboard_data(request):
     print("IN GET LEADERBOARD DATA")
@@ -663,6 +675,7 @@ def get_leaderboard_data(request):
             "result": "Success",
             "all_users":all_users_adjusted
         }
+        # ping(True, token.token)
         return Response(data)
     except Exception as e:
         print("SOMETHING WENT WRONG")
@@ -716,6 +729,18 @@ def league_placement(wins, games):
         print("IS A NOOB PLAYER IN THE LESE STATEMENT")
         return LeagueEnum.NOOB_TAPPER.value
 
+@api_view(['POST'])
+def test_celery(request):
+    token = Token.objects.get(token=request.data['token'])
+    user = User.objects.get(token=token)
+    user.is_active_task_value = not user.is_active_task_value
+    user.save()
+    task_data = {
+        "token": request.data['token'], 
+        "value": user.is_active_task_value
+    }
+    start_time_limit_for_users_streaks.delay(task_data)
+    return HttpResponse("Done")
 # def check_all_users_active():
 #     all_users = User.objects.all()
 #     print("IN CHECK FOR ALL ACTIVE USERS")
