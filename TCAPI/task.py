@@ -10,42 +10,48 @@ def check_users_are_active_no_wallet(self):
     for user in User.objects.all():
         print(f"Username: {user.username}, is_active: {user.is_active}")
         if user.is_active:
-            if user.has_wallet is False:
-                current_datetime = datetime.now(timezone.utc)
-                users_date = user.last_active_date
-                if find_time_difference(current_datetime, users_date):
-                    adjusted_user = True
-                    user.is_active = False
-                    user.in_queue = False
-                    user.in_game = False
-                    user.save()
+            # if user.has_wallet is False:
+            current_datetime = datetime.now(timezone.utc)
+            users_date = user.last_active_date
+            if find_time_difference(current_datetime, users_date):
+                adjusted_user = True
+                user.is_active = False
+                user.in_queue = False
+                user.in_game = False
+                user.save()
     if adjusted_user:
-        return "Adjusted Users"
+        return "Adjusted Users."
     else:
-        return "No Users Active"
+        return "No Users Adjusted."
 
-@shared_task(bind=True)
-def check_users_are_active_with_wallet(self):
-    adjusted_user = False
-    for user in User.objects.all():
-        if user.is_active:
-            if user.has_wallet:
-                current_datetime = datetime.now(timezone.utc)
-                users_date = user.last_active_date
-                if find_time_difference(current_datetime, users_date):
-                    adjusted_user = True
-                    token = user.token 
-                    user.is_active = False
-                    user.in_queue = False
-                    user.in_game = False
-                    user.logged_in = False
-                    token.token = "null"
-                    user.save()       
-                    token.save()
-    if adjusted_user:
-        return "Adjusted Users"
-    else:
-        return "No Users Adjusted"
+# Look into this later
+    # 'check-users-are-active-with-wallet': {
+    #     'task': 'TCAPI.task.check_users_are_active_with_wallet',
+    #     'schedule': crontab(minute='*/3'),
+    #     # args: (2,)
+    # }
+# @shared_task(bind=True)
+# def check_users_are_active_with_wallet(self):
+#     adjusted_user = False
+#     for user in User.objects.all():
+#         if user.is_active:
+#             if user.has_wallet:
+#                 current_datetime = datetime.now(timezone.utc)
+#                 users_date = user.last_active_date
+#                 if find_time_difference(current_datetime, users_date):
+#                     adjusted_user = True
+#                     token = user.token 
+#                     user.is_active = False
+#                     user.in_queue = False
+#                     user.in_game = False
+#                     user.logged_in = False
+#                     token.token = "null"
+#                     user.save()       
+#                     token.save()
+#     if adjusted_user:
+#         return "Adjusted Users"
+#     else:
+#         return "No Users Adjusted"
 
 @shared_task(bind=True)
 def start_time_limit_for_users_streaks(self, data):

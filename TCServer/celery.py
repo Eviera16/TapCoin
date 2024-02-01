@@ -19,11 +19,6 @@ app.conf.beat_schedule = {
         'task': 'TCAPI.task.check_users_are_active_no_wallet',
         'schedule': crontab(minute='*/5'),
         # args: (2,)
-    },
-    'check-users-are-active-with-wallet': {
-        'task': 'TCAPI.task.check_users_are_active_with_wallet',
-        'schedule': crontab(minute='*/3'),
-        # args: (2,)
     }
 }
 
