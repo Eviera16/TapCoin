@@ -15,6 +15,7 @@ from django.http import HttpResponse
 import re
 from ...Utilities.helpful_functions import ping
 from ...task import start_time_limit_for_users_streaks
+# from google.cloud import recaptchaenterprise_v1
 # Make sure each function is getting the Users token from the request in order to send the users token
 # to the ping function. Reg, Login and Logout will call the ping function at the end only.
 
@@ -88,7 +89,7 @@ def login_view(request):
         user1.in_game = False
         user1.in_queue = False
         user1.logged_in = True
-        user1.has_wallet = True # Remove this later
+        # user1.has_wallet = True # Remove this later
         user1.save()
         token = binascii.hexlify(os.urandom(config('TOKEN', cast=int))).decode()
         token1 = user1.token
@@ -109,6 +110,7 @@ def get_user(request):
     print("**********")
     print("IN GET USER")
     token = request.GET.get('token', None)
+    print(token)
     de_queue = request.GET.get('de_queue', None)
     newData = {
         "token": token
@@ -655,12 +657,12 @@ def get_leaderboard_data(request):
             else:
                 win_percentage = 0
             print("GOT WIN PERCENTAGE")
-            print(win_percentage)
+            print(round(win_percentage))
             user_obj = {
-                "username": user.username,
+                "username": user.username[:4],
                 "wins": user.wins,
                 "losses": user.losses,
-                "win_percentage" : win_percentage,
+                "win_percentage" : round(win_percentage),
                 "total_games": total_games,
                 "league": user.league
             }
@@ -671,6 +673,8 @@ def get_leaderboard_data(request):
         print("GOT ALL USERS ADJUSTED LIST")
         print(all_users_adjusted)
         all_users_adjusted.sort(key=sort_leaderboard, reverse=True)
+        print("GOT ALL USERS ADJUSTED LIST AGAIN")
+        print(all_users_adjusted)
         data = {
             "result": "Success",
             "all_users":all_users_adjusted

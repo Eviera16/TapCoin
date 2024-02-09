@@ -59,15 +59,14 @@ def start_time_limit_for_users_streaks(self, data):
     # Testing that the timers dont overlap with users
     # Get token from data and get user
     token = data['token']
-    token1 = Token.objects.get(token=token)
-    user = User.objects.get(token=token1)
     # Get user in_streak_time_value and set it to one or 2 save set value in function
     got_value = data['value']
     # enter while loop if user.streak_time_value == saved_set_value: continue
     # else exit loop
     count = 0
-
-    while count != 60:
+    token1 = Token.objects.get(token=token)
+    while count != 120:
+        user = User.objects.get(token=token1)
         if user.is_active_task_value == got_value:
             print(count)
             print(f"Users Value here: {user.is_active_task_value}")
@@ -75,6 +74,10 @@ def start_time_limit_for_users_streaks(self, data):
             print(got_value)
             time.sleep(1)
             count+=1
+            if count == 120:
+                user.win_streak = 0
+                user.save()
         else:
             break
+    
     
