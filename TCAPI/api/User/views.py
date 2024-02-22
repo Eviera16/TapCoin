@@ -13,7 +13,6 @@ from datetime import datetime, timedelta
 from django.utils.timezone import make_aware
 from django.http import HttpResponse
 import re
-from ...Utilities.helpful_functions import ping
 from ...task import start_time_limit_for_users_streaks
 # from google.cloud import recaptchaenterprise_v1
 # Make sure each function is getting the Users token from the request in order to send the users token
@@ -59,7 +58,11 @@ def registration_view(request):
                         "username": "Invalid."
                     }
                     return Response(data)
-            ping(True, token.token)
+            # ping(True, token.token)
+            u = User.objects.get(token=token)
+            u.is_active = True
+            u.last_active_date = datetime.now()
+            u.save()
             user1.save()
         else:
             data = serializer.errors
@@ -98,7 +101,11 @@ def login_view(request):
         data['token'] = token
         print("THE TOKEN IS BELOW")
         print(token)
-        ping(True, token)
+        # ping(True, token)
+        u = User.objects.get(token=token1)
+        u.is_active = True
+        u.last_active_date = datetime.now()
+        u.save()
     else:
         data = serializer.errors
     return Response(data)
@@ -192,8 +199,10 @@ def get_user(request):
                                 friend_line = "Game invite from " + friend.sending_user
                                 friend_names.append(friend_line)
                                 data['hasInvite'] = True
+                                print("PASSED THE TRY")
                             except:
-                                friend_names.append(friend.receiving_user)
+                                print("IN THE EXCEPT")
+                                friend_names.append(friend.sending_user)
                         else:
                             print("USER DOES NOT HAVE GAME INVITE")
                             print(friend.sending_user)
@@ -201,9 +210,20 @@ def get_user(request):
                             data['hasInvite'] = False
                             friend_names.append(friend.sending_user)
                 if temp_friend.is_active:
+                    print("THE TEMP FRIEND IS ACTIVE HERE")
+                    print(temp_friend.username)
+                    print(temp_friend.is_active)
                     active_friends_index_list.append(index_count)
                 index_count += 1
             data['friends'] = friend_names
+            print("######")
+            print("######")
+            print("######")
+            print("FRIENDS BELOW")
+            print(data['friends'])
+            print("######")
+            print("######")
+            print("######")
             data['active_friends_index_list'] = active_friends_index_list
         else:
             print("USER HAS 0 FRIENDS")
@@ -218,7 +238,11 @@ def get_user(request):
         else:
             data['phone_number'] = "No Phone number"
             data['HPN'] = False
-        ping(True, token)
+        # ping(True, token)
+        # u = User.objects.get(token=token)
+        user.is_active = True
+        user.last_active_date = datetime.now()
+        user.save()
         user.save()
         if user.has_location == True:
             data['has_location'] = True
@@ -278,7 +302,9 @@ def logout_view(request):
         user.logged_in = False
         user.in_queue = False
         user.in_game = False
-        ping(False, token1.token)
+        user.is_active = False
+        token1.token = "null"
+        token.save()
         user.save()
     return Response(data)
 
@@ -311,7 +337,11 @@ def guest_login(request):
         data['username'] = user.username
         data['error'] = False
         data['token'] = token1.token
-        ping(True, token1.token)
+        # ping(True, token1.token)
+        u = User.objects.get(token=token1)
+        u.is_active = True
+        u.last_active_date = datetime.now()
+        u.save()
     except Exception as e:
         newError = str(e)
         newErr = newError.split("DETAIL:")[1]
@@ -363,19 +393,29 @@ def send_code(request):
     }
 
     try:
+        print("IN THE TRY")
         user = User.objects.get(phone_number=phone_number)
+        print("GOT THE USER BY PHONE NUMBER")
+        print(user.phone_number)
         data['message'] = "BEFORE SEND TEXT"
         requests.post('https://textbelt.com/text', {
             'phone': phone_number,
             'message': f'Your temporary code is: {code}',
             'key': '951292afc50e335e0bc2ac92e70e3ecd4030853aQFJFjuPmMccnZjNCihpssKcII',
         })
-        right_now = make_aware(datetime.datetime.now())
+        print("AFTER SENDING REQUEST")
+        right_now = make_aware(datetime.now())
+        print("AFTER RIGHT NOW")
         user.p_code = int(code)
+        print("AFTER USER P CODE")
         user.p_code_time = right_now
+        print("AFTER USER P CODE TIME")
         user.save()
+        print("AFTER USER SAVE")
         data['message'] = f"RESPONSE IS A SUCCESS {right_now}."
     except Exception as e:
+        print("IN EXCEPTION")
+        print(e)
         data['response'] = False
         data['message'] = f"IN THE EXCEPT BLOCK e: {e}"
     
@@ -534,8 +574,8 @@ def save(request):
     }
     try:
         print("IN TRY BLOCK")
-        print(request.data['answer_2'])
-        print(request.data['edit_qnas'])
+        # print(request.data['answer_2'])
+        # print(request.data['edit_qnas'])
         token = Token.objects.get(token=request.data['token'])
         print("CREATED TOKEN")
         user = User.objects.get(token=token)
@@ -565,7 +605,11 @@ def save(request):
         else:
             print("IS NOT A GUEST")
             data['response'] = "Successfully saved data."
-        ping(True, token.token)
+        # ping(True, token.token)
+        u = User.objects.get(token=token)
+        u.is_active = True
+        u.last_active_date = datetime.now()
+        u.save()
     except Exception as e:
         print("E IS BELOW")
         print(e)
@@ -598,7 +642,11 @@ def save_location(request):
             "result" : "SUCCESS"
         }
         print("RETURNING SUCCESS")
-        ping(True, token.token)
+        # ping(True, token.token)
+        u = User.objects.get(token=token)
+        u.is_active = True
+        u.last_active_date = datetime.now()
+        u.save()
         return Response(data)
     except:
         print("SOMETHING WENT WRONG")
@@ -628,7 +676,11 @@ def confirm_password(request):
         data['result'] = True
     else:
         data['result'] = False
-    ping(True, token.token)
+    # ping(True, token.token)
+    u = User.objects.get(token=token)
+    u.is_active = True
+    u.last_active_date = datetime.now()
+    u.save()
     return Response(data)
 
 def sort_leaderboard(e):
@@ -745,6 +797,15 @@ def test_celery(request):
     }
     start_time_limit_for_users_streaks.delay(task_data)
     return HttpResponse("Done")
+
+def ping(active, _token):
+    token = Token.objects.get(token=_token)
+    user = User.objects.get(token=token)
+    user.last_active_date = datetime.now()
+    user.is_active = True
+    user.save()
+    print(f"Username: {user.username}, is_active: {user.is_active}")
+    return "Active"
 # def check_all_users_active():
 #     all_users = User.objects.all()
 #     print("IN CHECK FOR ALL ACTIVE USERS")

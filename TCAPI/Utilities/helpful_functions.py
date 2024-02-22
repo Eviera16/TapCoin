@@ -1,22 +1,15 @@
 from datetime import datetime, timedelta
-from ..models import *
+from ..models import User, Token
 
 # Ping function for Users activity
 def ping(active, _token):
     token = Token.objects.get(token=_token)
     user = User.objects.get(token=token)
-    if active:
-        user.last_active_date = datetime.now()
-        user.is_active = True
-        user.save()
-        print(f"Username: {user.username}, is_active: {user.is_active}")
-        return "Active"
-    else:
-        user.is_active = False
-        user.save()
-        token.token = "null"
-        token.save()
-        return "Inactive"
+    user.last_active_date = datetime.now()
+    user.is_active = True
+    user.save()
+    print(f"Username: {user.username}, is_active: {user.is_active}")
+    return "Active"
     
 # Find time difference between two dates for active users logic
 def find_time_difference(date1, date2):

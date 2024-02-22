@@ -33,8 +33,16 @@ def get_user_and_game(request):
             "player1_username": user_1.username,
             "player2_username": user_2.username
         }
-        ping(True, user_1_token.token)
-        ping(True, user_2_token.token)
+        # ping(True, user_1_token.token)
+        u = User.objects.get(token=user_1_token)
+        u.is_active = True
+        u.last_active_date = datetime.now()
+        u.save()
+        # ping(True, user_2_token.token)
+        u2 = User.objects.get(token=user_2_token)
+        u2.is_active = True
+        u2.last_active_date = datetime.now()
+        u2.save()
         return Response(data)
     except:
         print("IN THE EXCEPT")
@@ -146,8 +154,16 @@ def send_points(request):
     data = {
         "gameOver" : True
     }
-    ping(True, user1.token.token)
-    ping(True, user2.token.token)
+    # ping(True, user1.token.token)
+    u = User.objects.get(token=user1.token)
+    u.is_active = True
+    u.last_active_date = datetime.now()
+    u.save()
+    # ping(True, user2.token.token)
+    u2 = User.objects.get(token=user2.token)
+    u2.is_active = True
+    u2.last_active_date = datetime.now()
+    u2.save()
     return Response(data)
 
 @api_view(['POST'])
@@ -180,7 +196,11 @@ def create_game(request):
         user2.in_game = False
         user1.save()
         user2.save()
-    ping(True, token.token)
+    # ping(True, token.token)
+    u = User.objects.get(token=token)
+    u.is_active = True
+    u.last_active_date = datetime.now()
+    u.save()
     return Response(data)
 
 @api_view(['POST'])
@@ -194,7 +214,11 @@ def check_in_game(request):
         data['response'] = "INGAME"
     else:
         data['response'] = "OUTGAME"
-    ping(True, token.token)
+    # ping(True, token.token)
+    u = User.objects.get(token=token)
+    u.is_active = True
+    u.last_active_date = datetime.now()
+    u.save()
     return Response(data)
 
 def update_players_wins():

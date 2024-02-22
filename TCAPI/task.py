@@ -65,7 +65,8 @@ def start_time_limit_for_users_streaks(self, data):
     # else exit loop
     count = 0
     token1 = Token.objects.get(token=token)
-    while count != 120:
+    set_win_streak = False
+    while True:
         user = User.objects.get(token=token1)
         if user.is_active_task_value == got_value:
             print(count)
@@ -75,9 +76,18 @@ def start_time_limit_for_users_streaks(self, data):
             time.sleep(1)
             count+=1
             if count == 120:
-                user.win_streak = 0
-                user.save()
+                print("THE COUNT IS 120")
+                set_win_streak = True
+                count = 0
+                break
         else:
             break
+    if set_win_streak:
+        print("SETTING NEW WIN STREAK HERE")
+        this_user = User.objects.get(token=token1)
+        this_user.win_streak = 0
+        this_user.save()
+        print(this_user.username)
+        print(this_user.win_streak)
     
     

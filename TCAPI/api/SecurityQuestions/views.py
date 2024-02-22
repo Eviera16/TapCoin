@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ...models import *
 from ...Utilities.helpful_functions import ping
+from datetime import datetime
 
 @api_view(['GET'])   
 def get_security_questions_text(request):
@@ -55,7 +56,11 @@ def save_users_security_questions(request):
         data = {
             "result": "Success"
         }
-        ping(True, token.token)
+        # ping(True, token.token)
+        u = User.objects.get(token=token)
+        u.is_active = True
+        u.last_active_date = datetime.now()
+        u.save()
         return Response(data)
     except:
         data ={
@@ -112,7 +117,11 @@ def check_users_answers(request):
         data = {
             "result": False
         }
-        ping(True, user.token.token)
+        # ping(True, user.token.token)
+        u = User.objects.get(token=user.token)
+        u.is_active = True
+        u.last_active_date = datetime.now()
+        u.save()
         return Response(data)
     except:
         print("In Except Block")
@@ -141,7 +150,11 @@ def get_users_questions_answers(request):
                 "answer_1": "None",
                 "answer_2": "None"
             }
-            ping(True, token.token)
+            # ping(True, token.token)
+            u = User.objects.get(token=token)
+            u.is_active = True
+            u.last_active_date = datetime.now()
+            u.save()
             return Response(data)
         else:
             print("USER HAS QUESTIONS")
@@ -154,7 +167,11 @@ def get_users_questions_answers(request):
                 "answer_1": user.security_questions_answers.answer_1,
                 "answer_2": user.security_questions_answers.answer_2
             }
-            ping(True, token.token)
+            # ping(True, token.token)
+            u = User.objects.get(token=token)
+            u.is_active = True
+            u.last_active_date = datetime.now()
+            u.save()
             return Response(data)
     except:
         print("IN THE EXCEPT BLOCK")

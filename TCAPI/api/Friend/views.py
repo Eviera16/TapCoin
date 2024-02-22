@@ -4,6 +4,7 @@ from ...models import *
 import binascii
 import os
 from ...Utilities.helpful_functions import ping
+from datetime import datetime
 
 @api_view(['POST'])
 def send_friendRequest(request):
@@ -78,7 +79,11 @@ def send_friendRequest(request):
             "result": "Success",
             "friends": user2.username
         }
-        ping(True, token1.token)
+        # ping(True, token1.token)
+        u = User.objects.get(token=token1)
+        u.is_active = True
+        u.last_active_date = datetime.now()
+        u.save()
         return Response(data)
     except Exception as e:
         print("20")
@@ -92,22 +97,38 @@ def send_friendRequest(request):
 @api_view(['POST'])
 def accept_friendRequest(request):
     try:
+        print("1")
         token1 = Token.objects.get(token=request.data['token'])
+        print("2")
         accepter = User.objects.get(token=token1)
+        print("3")
         sender = User.objects.get(username=request.data['username'])
+        print("4")
         # Get friend model based on usernames
         users_usernames = sender.username + accepter.username
+        print("5")
         friend_model = FriendModel.objects.get(users_names_string=users_usernames)
+        print("6")
         # Adjust pending_request attribute to False
         friend_model.pending_request = False
+        print("7")
         # Save Friend Model
         friend_model.save()
+        print("8")
         data = {
             "result": "Accepted"
         }
-        ping(True, token1.token)
+        # ping(True, token1.token)
+        u = User.objects.get(token=token1)
+        print("9")
+        u.is_active = True
+        print("10")
+        u.last_active_date = datetime.now()
+        print("11")
+        u.save()
         return Response(data)
     except:
+        print("IN THE EXCEPT")
         data = {
             "result": "Colud not accept request"
         }
@@ -129,7 +150,11 @@ def decline_friendRequest(request):
         data = {
             "result": "Declined"
         }
-        ping(True, token1.token)
+        # ping(True, token1.token)
+        u = User.objects.get(token=token1)
+        u.is_active = True
+        u.last_active_date = datetime.now()
+        u.save()
         return Response(data)
     except:
         data = {
@@ -176,7 +201,11 @@ def remove_friend(request):
         data = {
             "result": "Removed"
         }
-        ping(True, token1.token)
+        # ping(True, token1.token)
+        u = User.objects.get(token=token1)
+        u.is_active = True
+        u.last_active_date = datetime.now()
+        u.save()
         return Response(data)
     except:
         print("IN SECOND EXCEPT BLOCK")
@@ -211,7 +240,11 @@ def send_invite(request):
                     "second": "ALREADY EXISTS",
                     "gameId": "ALREADY EXISTS"
                 }
-                ping(True, token.token)
+                # ping(True, token.token)
+                u = User.objects.get(token=token)
+                u.is_active = True
+                u.last_active_date = datetime.now()
+                u.save()
                 return Response(data)
         elif gInvite.sender == user2.username:
             if gInvite.reciever == user1.username:
@@ -220,7 +253,11 @@ def send_invite(request):
                     "second": "ALREADY EXISTS",
                     "gameId": "ALREADY EXISTS"
                 }
-                ping(True, token.token)
+                # ping(True, token.token)
+                u = User.objects.get(token=token)
+                u.is_active = True
+                u.last_active_date = datetime.now()
+                u.save()
                 return Response(data)
     gameInvite = GameInvite.objects.create(sender=user1.username, reciever=user2.username, gameId=gameId)
     print("GAME INVITE OBJECT IS BELOW")
@@ -240,27 +277,45 @@ def send_invite(request):
     }
     print("DATA IS BELOW")
     print(data)
-    ping(True, token.token)
+    # ping(True, token.token)
+    u = User.objects.get(token=token)
+    u.is_active = True
+    u.last_active_date = datetime.now()
+    u.save()
     return Response(data)
 
 @api_view(['POST'])
 def ad_invite(request):
+    print("IN AD INVITE")
+    print(request.data)
     sender = User.objects.get(username=request.data['username'])
+    print("GOT SENDER")
     token = Token.objects.get(token=request.data['token'])
+    print("GOT TOKEN")
     reciever = User.objects.get(token=token)
+    print("GOT RECEIVER")
     ad_request = request.data['adRequest']
     try:
+        print("IN THE TRY")
+        print(ad_request)
         if ad_request == "delete":
+            print("IT IS DELETE")
             deleted = False
             try:
                 if request.data['cancelled'] == True:
+                    print("CANCELLED IS TRUE")
                     data = {
                         "result": "Cancelled",
                         "gameId": sender.cg_Id
                     }
-                    ping(True, token.token)
+                    # ping(True, token.token)
+                    u = User.objects.get(token=token)
+                    u.is_active = True
+                    u.last_active_date = datetime.now()
+                    u.save()
                     return Response(data)
                 else:
+                    print("CANCELLED IS NOT TRUE")
                     for invite in GameInvite.objects.all():
                         if invite.sender == sender.username:
                             if invite.reciever == reciever.username:
@@ -275,19 +330,26 @@ def ad_invite(request):
                                 invite.delete()
                                 deleted = True
                     if deleted:
+                        print("DELETED IS TRUE")
                         data = {
                             "result": "Cancelled",
                             "gameId": sender.cg_Id
                         }
                     else:
+                        print("DELETED IS NOT TRUE")
                         data = {
                             "result": "Something went wrong",
                             "gameId": "None"
-                            
                         }
-                    ping(True, token.token)
+                    # ping(True, token.token)
+                    u = User.objects.get(token=token)
+                    u.is_active = True
+                    u.last_active_date = datetime.now()
+                    u.save()
+                    print("RETURNING RESPONSE")
                     return Response(data)
             except:
+                print("IN THE EXCEPT BLOCK")
                 for invite in GameInvite.objects.all():
                     if invite.sender == sender.username:
                         if invite.reciever == reciever.username:
@@ -302,39 +364,61 @@ def ad_invite(request):
                             invite.delete()
                             deleted = True
                 if deleted:
+                    print("DELETED IS TRUE")
                     data = {
                         "result": "Cancelled",
                         "gameId": sender.cg_Id
                     }
-                    ping(True, token.token)
+                    # ping(True, token.token)
+                    u = User.objects.get(token=token)
+                    u.is_active = True
+                    u.last_active_date = datetime.now()
+                    u.save()
                 else:
+                    print("DELETED IS FALSE")
                     data = {
                         "result": "Soemthing went wrong",
                         "gameId": "None"
                     }
                 return Response(data)
         else:
+            print("IT IS GAME INVITE")
             game = None
             for invite in GameInvite.objects.all():
                 if invite.sender == sender.username:
+                    print("SENDERS ARE EQUAL")
+                    print(invite.sender)
+                    print(invite.reciever)
+                    print(sender.username)
+                    print(reciever.username)
                     if invite.reciever == reciever.username:
+                        print("RECEIVERS ARE EQUAL TOO")
                         game = Game.objects.get(gameId=invite.gameId)
                         invite.delete()
                         deleted = True
                 elif invite.sender == reciever.username:
+                    print("RECEIVERS ARE EQUAL")
                     if invite.reciever == sender.username:
+                        print("SENDERS ARE EQUAL TOO")
                         game = Game.objects.get(gameId=invite.gameId)
                         invite.delete()
                         deleted = True
             if deleted:
+                print("IN DELETED")
                 data = {
                     "result": "Accepted",
                     "first":game.first,
                     "second":game.second,
                     "gameId":game.gameId
                 }
-                ping(True, token.token)
+                # ping(True, token.token)
+                u = User.objects.get(token=token)
+                u.is_active = True
+                u.last_active_date = datetime.now()
+                u.save()
+                print("IT DELETED")
             else:
+                print("IN ELSE DELETED")
                 data = {
                     "result": "Soemthing went wrong",
                     "first":"None",
@@ -343,6 +427,7 @@ def ad_invite(request):
                 }
             return Response(data)
     except:
+        print("IN EXCEPT BLOCK")
         data = {
             "result": "Somethiong went wrong"
         }
