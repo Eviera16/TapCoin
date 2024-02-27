@@ -1,8 +1,8 @@
 from celery import shared_task
-from .models import User, Token
+from ..TCAPI.models import User, Token
 from datetime import datetime, timezone
 import time
-from .Utilities.helpful_functions import find_time_difference
+from ..TCAPI.Utilities.helpful_functions import find_time_difference
 
 @shared_task(bind=True)
 def check_users_are_active_no_wallet(self):
@@ -90,4 +90,6 @@ def start_time_limit_for_users_streaks(self, data):
         print(this_user.username)
         print(this_user.win_streak)
     
-    
+@shared_task(bind=True)   
+def add_user_to_queue(self, data):
+    print(data) 

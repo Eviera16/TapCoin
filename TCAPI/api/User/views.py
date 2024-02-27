@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from django.utils.timezone import make_aware
 from django.http import HttpResponse
 import re
-from ...task import start_time_limit_for_users_streaks
+from ....Tasks.task import start_time_limit_for_users_streaks
 # from google.cloud import recaptchaenterprise_v1
 # Make sure each function is getting the Users token from the request in order to send the users token
 # to the ping function. Reg, Login and Logout will call the ping function at the end only.
