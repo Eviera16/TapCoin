@@ -87,21 +87,25 @@ def send_points(request):
         print("***** FPOINTS IS GREATER *****")
         user1.wins += 1
         user1.win_streak += 1
+        user1.has_streak = True
+        user1.lost_streak = False
         if user1.win_streak > user1.best_streak:
             print("NEW BEST STREAK")
             user1.best_streak = user1.win_streak
-        user1.is_active_task_value = not user1.is_active_task_value
+        # user1.is_active_task_value = not user1.is_active_task_value
         user1.save()
-        task_data = {
-            "token": user1.token.token, 
-            "value": user1.is_active_task_value
-        }
-        start_time_limit_for_users_streaks.delay(task_data)
+        # task_data = {
+        #     "token": user1.token.token, 
+        #     "value": user1.is_active_task_value
+        # }
+        # start_time_limit_for_users_streaks.delay(task_data)
         user2.losses += 1
         if user2.win_streak > user2.best_streak:
             user2.best_streak = user2.win_streak
         user2.win_streak = 0
-        user2.is_active_task_value = not user2.is_active_task_value
+        user2.has_streak = False
+        user2.lost_streak = True
+        # user2.is_active_task_value = not user2.is_active_task_value
         user2.save()
         game.fPoints = fPoints
         game.sPoints = sPoints
@@ -114,20 +118,24 @@ def send_points(request):
         if user1.win_streak > user1.best_streak:
             user1.best_streak = user1.win_streak
         user1.win_streak = 0
-        user1.is_active_task_value = not user1.is_active_task_value
+        user1.has_streak = False
+        user1.lost_streak = True
+        # user1.is_active_task_value = not user1.is_active_task_value
         user1.save()
         user2.wins += 1
         user2.win_streak += 1
+        user2.has_streak = True
+        user2.lost_streak = False
         if user2.win_streak > user2.best_streak:
             print("NEW BEST STREAK")
             user2.best_streak = user2.win_streak
-        user2.is_active_task_value = not user2.is_active_task_value
+        # user2.is_active_task_value = not user2.is_active_task_value
         user2.save()
-        task_data = {
-            "token": user1.token.token, 
-            "value": user2.is_active_task_value
-        }
-        start_time_limit_for_users_streaks.delay(task_data)
+        # task_data = {
+        #     "token": user2.token.token, 
+        #     "value": user2.is_active_task_value
+        # }
+        # start_time_limit_for_users_streaks.delay(task_data)
         game.fPoints = fPoints
         game.sPoints = sPoints
         game.winner = user2.username
@@ -220,6 +228,43 @@ def check_in_game(request):
     u.last_active_date = datetime.now()
     u.save()
     return Response(data)
+
+@api_view(['POST'])
+def start_user_streak(request):
+    print("IN START USER STREAK")
+    try:
+        print("IN TRY")
+        token = request.data['token']
+        _TOKEN = Token.objects.get(token=token)
+        user = User.objects.get(token=_TOKEN)
+        if user.has_streak == True:
+            print("USER HAS STREAK")
+            user.is_active_task_value = not user.is_active_task_value
+            user.has_streak = False
+            user.save()
+            task_data = {
+                "token": token, 
+                "value": user.is_active_task_value
+            }
+            print(f"TASK DATA: {task_data}")
+            start_time_limit_for_users_streaks.delay(task_data)
+            print("CALLED TASK")
+            data = {
+                "response": True
+            }
+            return Response(data)
+        else:
+            data = {
+                "response": False
+            }
+            return Response(data)
+    except:
+        data = {
+            "response": False
+        }
+        return Response(data)
+
+
 
 def update_players_wins():
   print("***** IN THE UPDATE PLAYERS WINS FUNCTION *****")

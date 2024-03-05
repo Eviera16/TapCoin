@@ -68,10 +68,11 @@ def start_time_limit_for_users_streaks(self, data):
     set_win_streak = False
     while True:
         user = User.objects.get(token=token1)
-        if user.is_active_task_value == got_value:
+        if user.is_active_task_value == got_value and user.lost_streak == False:
             print(count)
             print(f"Users Value here: {user.is_active_task_value}")
             print(f"Got Value here: {got_value}")
+            print(f"USER LOST STREAK VALUE: {user.lost_streak}")
             print(got_value)
             time.sleep(1)
             count+=1

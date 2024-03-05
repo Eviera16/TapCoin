@@ -42,6 +42,10 @@ def registration_view(request):
             user1.in_game = False
             user1.in_queue = False
             user1.logged_in = True
+            if request.data['first_name'] != "":
+                user1.first_name = request.data['first_name']
+            if request.data['last_name'] != "":
+                user1.last_name = request.data['last_name']
             if request.data['phone_number'] != "":
                 validate_phone_number_pattern = "^\\+?[1-9][0-9]{7,14}$"
                 is_valid_phone_number = re.match(validate_phone_number_pattern, request.data['phone_number'])
